@@ -1,15 +1,14 @@
 package janus
 
 import (
-	z "github.com/moeen/ghodrat/internal/logger/zap"
-	"github.com/moeen/ghodrat/internal/webrtc"
-	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-	"log"
 	"math/rand"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/moeen/ghodrat/internal/webrtc"
+	"github.com/moeen/ghodrat/pkg/logger"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -17,53 +16,50 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	logger, err := z.InitZapLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
+	lg := logger.NewZap(nil)
 
 	address, err := cmd.Flags().GetString("address")
 	if err != nil {
-		logger.Fatal("failed to get address flag", zap.Error(err))
+		lg.Fatal("failed to get address flag", logger.Error(err))
 	}
 
-	logger.Info("using Janus websocket", zap.String("address", address))
+	lg.Info("using Janus websocket", logger.String("address", address))
 
 	audioFile, err := cmd.Flags().GetString("audio-file")
 	if err != nil {
-		logger.Fatal("failed to get audio-file flag", zap.Error(err))
+		lg.Fatal("failed to get audio-file flag", logger.Error(err))
 	}
 
-	logger.Info("checking if audio file exists", zap.String("audio_file", audioFile))
+	lg.Info("checking if audio file exists", logger.String("audio_file", audioFile))
 
 	_, err = os.Stat(audioFile)
 	if os.IsNotExist(err) {
-		logger.Fatal("audio file does not exist", zap.String("audio_file", audioFile))
+		lg.Fatal("audio file does not exist", logger.String("audio_file", audioFile))
 	}
 
-	call, err := webrtc.NewCall(logger.Named("caller"))
+	call, err := webrtc.NewCall(address, lg.Named("caller"))
 	if err != nil {
-		logger.Fatal("failed to create the call", zap.Error(err))
+		lg.Fatal("failed to create the call", logger.Error(err))
 	}
 
 	go func() {
 		if err := call.ReadRTCPPackets(); err != nil {
-			logger.Error("failed to read RTCP packets", zap.Error(err))
+			lg.Error("failed to read RTCP packets", logger.Error(err))
 		}
 	}()
 
 	go func() {
 		if err := call.StreamAudioFile(audioFile); err != nil {
-			logger.Fatal("failed to stream audio", zap.Error(err))
+			lg.Fatal("failed to stream audio", logger.Error(err))
 		}
 	}()
 
 	if err := call.CreateAndSetLocalOffer(); err != nil {
-		logger.Fatal("failed to create and set local SDP offer", zap.Error(err))
+		lg.Fatal("failed to create and set local SDP offer", logger.Error(err))
 	}
 
-	if err := call.Call(address); err != nil {
-		logger.Fatal("failed to call via janus", zap.Error(err))
+	if err := call.Call(); err != nil {
+		lg.Fatal("failed to call via janus", logger.Error(err))
 	}
 
 	closed := make(chan os.Signal, 1)
@@ -71,8 +67,6 @@ func run(cmd *cobra.Command, args []string) {
 	<-closed
 
 	if err := call.Close(); err != nil {
-		logger.Error("failed to close the call", zap.Error(err))
+		lg.Error("failed to close the call", logger.Error(err))
 	}
-
-	return
 }

@@ -3,22 +3,23 @@ package webrtc
 import (
 	"context"
 	"fmt"
+	"io"
+	"math/rand"
+	"os"
+	"time"
+
 	"github.com/at-wat/ebml-go/webm"
+	"github.com/moeen/ghodrat/pkg/logger"
 	"github.com/notedit/janus-go"
 	"github.com/pion/rtp/codecs"
 	"github.com/pion/webrtc/v3"
 	"github.com/pion/webrtc/v3/pkg/media"
 	"github.com/pion/webrtc/v3/pkg/media/oggreader"
 	"github.com/pion/webrtc/v3/pkg/media/samplebuilder"
-	"go.uber.org/zap"
-	"io"
-	"math/rand"
-	"os"
-	"time"
 )
 
 type Call struct {
-	logger *zap.Logger
+	logger logger.Logger
 
 	peerConnection *webrtc.PeerConnection
 
@@ -36,15 +37,18 @@ type Call struct {
 }
 
 func (c *Call) onICEConnectionStateChange(connectionState webrtc.ICEConnectionState) {
-	c.logger.Info("connection state has changed", zap.String("state", connectionState.String()))
+	c.logger.Info("connection state has changed", logger.String("state", connectionState.String()))
 	if connectionState == webrtc.ICEConnectionStateConnected {
 		c.iceConnectedCtxCancel()
 	}
 }
 
 func (c *Call) saveOpusTrack(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
-	c.logger.Info("track has started", zap.Uint8("payload_type", uint8(track.PayloadType())),
-		zap.String("mime_type", track.Codec().RTPCodecCapability.MimeType))
+	c.logger.Info(
+		"track has started",
+		logger.Int("payload_type", int(track.PayloadType())),
+		logger.String("mime_type", track.Codec().RTPCodecCapability.MimeType),
+	)
 
 	for {
 		// Read RTP packets being sent to Pion
@@ -53,7 +57,7 @@ func (c *Call) saveOpusTrack(track *webrtc.TrackRemote, receiver *webrtc.RTPRece
 			if err == io.EOF {
 				return
 			}
-			c.logger.Fatal("failed to read RTP", zap.Error(err))
+			c.logger.Fatal("failed to read RTP", logger.Error(err))
 		}
 		switch track.Kind() {
 		case webrtc.RTPCodecTypeAudio:
@@ -66,7 +70,7 @@ func (c *Call) saveOpusTrack(track *webrtc.TrackRemote, receiver *webrtc.RTPRece
 				if c.audioWriter != nil {
 					c.audioTimestamp += sample.Duration
 					if _, err := c.audioWriter.Write(true, int64(c.audioTimestamp/time.Millisecond), sample.Data); err != nil {
-						c.logger.Fatal("failed to write audio", zap.Error(err))
+						c.logger.Fatal("failed to write audio", logger.Error(err))
 					}
 				}
 			}
@@ -146,15 +150,15 @@ func (c *Call) watchHandle(handle *janus.Handle) {
 		msg := <-handle.Events
 		switch msg := msg.(type) {
 		case *janus.SlowLinkMsg:
-			c.logger.Info("SlowLinkMsg", zap.Uint64("id", handle.ID))
+			c.logger.Info("SlowLinkMsg", logger.Int("id", int(handle.ID)))
 		case *janus.MediaMsg:
-			c.logger.Info("MediaEvent", zap.String("type", msg.Type), zap.Bool("receiving", msg.Receiving))
+			c.logger.Info("MediaEvent", logger.String("type", msg.Type), logger.Bool("receiving", msg.Receiving))
 		case *janus.WebRTCUpMsg:
-			c.logger.Info("WebRTCUp", zap.Uint64("id", handle.ID))
+			c.logger.Info("WebRTCUp", logger.Int("id", int(handle.ID)))
 		case *janus.HangupMsg:
-			c.logger.Info("HangupEvent", zap.Uint64("id", handle.ID))
+			c.logger.Info("HangupEvent", logger.Int("id", int(handle.ID)))
 		case *janus.EventMsg:
-			c.logger.Info("EventMsg", zap.Any("data", msg.Plugindata.Data))
+			c.logger.Info("EventMsg", logger.Any("data", msg.Plugindata.Data))
 		}
 	}
 }
@@ -170,7 +174,7 @@ func (c *Call) Call() error {
 
 	roomID := create.PluginData.Data["room"].(float64)
 
-	c.logger.Info("room created", zap.Float64("room", roomID))
+	c.logger.Info("room created", logger.Float64("room", roomID))
 
 	join, err := c.audioBridgeHandle.Message(map[string]interface{}{
 		"request": "join",
@@ -180,8 +184,8 @@ func (c *Call) Call() error {
 		return fmt.Errorf("failed to join room: %w", err)
 	}
 
-	c.logger.Info("joined to room", zap.Float64("id", join.Plugindata.Data["id"].(float64)),
-		zap.Any("participants", join.Plugindata.Data["participants"]))
+	c.logger.Info("joined to room", logger.Float64("id", join.Plugindata.Data["id"].(float64)),
+		logger.Any("participants", join.Plugindata.Data["participants"]))
 
 	configure, err := c.audioBridgeHandle.Message(map[string]interface{}{
 		"request": "configure",
@@ -219,10 +223,8 @@ func (c *Call) Close() error {
 	return nil
 }
 
-func NewCall(janusAddress string, logger *zap.Logger) (*Call, error) {
-	c := &Call{
-		logger: logger,
-	}
+func NewCall(janusAddress string, logger logger.Logger) (*Call, error) {
+	c := &Call{logger: logger}
 
 	peerConnection, err := NewPeerConnectionWithOpusMediaEngine()
 	if err != nil {
