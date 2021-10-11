@@ -11,7 +11,7 @@ func Register(root *cobra.Command) {
 	}
 
 	janusCMD.Flags().String("address", "ws://127.0.0.1:8188/", "Janus media server websocket address")
-	janusCMD.Flags().String("audio-file", "./assets/audio.ogg", "audio file used to stream to Janus")
+	janusCMD.Flags().String("audio-file", "./static/audio.ogg", "audio file used to stream to Janus")
 	janusCMD.Flags().Uint("call-count", 1, "number of concurrent calls")
 
 	root.AddCommand(janusCMD)
