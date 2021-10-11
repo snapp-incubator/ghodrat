@@ -4,6 +4,10 @@
 
 ## COCEPTS
 
+### Good resources
+
+- https://webrtcforthecurious.com/
+
 ### WebRTC (web Real Time Communication)
 
 > it's a low latency API to exchange video and audio in an efficient manner

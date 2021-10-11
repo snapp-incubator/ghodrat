@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"github.com/moeen/ghodrat/internal/cmd/janus"
+	"log"
+
+	"github.com/snapp-incubator/ghodrat/internal/cmd/janus"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	"log"
 )
 
 func NewRootCMD() *cobra.Command {

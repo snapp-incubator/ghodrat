@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/moeen/ghodrat/internal/webrtc"
-	"github.com/moeen/ghodrat/pkg/logger"
+	"github.com/snapp-incubator/ghodrat/internal/webrtc"
+	"github.com/snapp-incubator/ghodrat/pkg/logger"
 	"github.com/spf13/cobra"
 )
 

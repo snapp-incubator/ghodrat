@@ -1,4 +1,4 @@
-module github.com/moeen/ghodrat
+module github.com/snapp-incubator/ghodrat
 
 go 1.17
 
