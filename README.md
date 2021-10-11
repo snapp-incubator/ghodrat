@@ -53,6 +53,36 @@
     - packets to external <IP:Port> on the router always maps to internal <IP:Port> as long
     as source address and port from packet matches the table
 
-    - allow if the full pair match
+    - allow if the full pair match (it's for you and me)
 
     <p align="center"><img src="assets/symetric-nat.png" /></p>
+
+### STUN (Session Traversal Utilities for NAT)
+
+> it's a remote server which will return your public ip address
+>
+> tell me my public ip <address:port> throgh NAT (cheap to maintain)
+
+
+
+- port 3478, 5349 for TLS
+
+
+
+    <p align="center"><img src="assets/stun.png" /></p>
+
+- works for first 3 models of NAT translations (not symetric)
+
+    <p align="center"><img src="assets/stun-one-to-one-nat.png" /></p>
+
+- how clients behind Address/port restricted can connect to each other? 
+The trick is they will try to communicate both with a dummy packet which will be blocked by each 
+recipient (because no ip/port mapping ) exist but the second packet will pass because each device 
+will see that they attempted to connect to the other one so packets will be allowed
+
+- why can't symmetric NAT use this technique as well?
+because the External Port is changed on each request.
+
+- when stun doesn't work
+
+    <p align="center"><img src="assets/stun-symetric-nat.png" /></p>
