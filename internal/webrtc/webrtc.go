@@ -36,6 +36,90 @@ type Call struct {
 	iceConnectedCtxCancel context.CancelFunc
 }
 
+func NewCall(janusAddress string, logger logger.Logger) (*Call, error) {
+	c := &Call{logger: logger}
+
+	peerConnection, err := NewPeerConnectionWithOpusMediaEngine()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create peer connection: %w", err)
+	}
+	c.peerConnection = peerConnection
+
+	audioBuilder := samplebuilder.New(10, &codecs.OpusPacket{}, 48000)
+	c.audioBuilder = audioBuilder
+
+	w, err := os.OpenFile(fmt.Sprintf("/tmp/test-%d.opus", rand.Intn(100)), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open audio file: %w", err)
+	}
+
+	ws, err := webm.NewSimpleBlockWriter(w, []webm.TrackEntry{
+		{
+			Name:            "Audio",
+			TrackNumber:     1,
+			TrackUID:        12345,
+			CodecID:         "A_OPUS",
+			TrackType:       2,
+			DefaultDuration: 20000000,
+			Audio: &webm.Audio{
+				SamplingFrequency: 48000.0,
+				Channels:          2,
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create block write: %w", err)
+	}
+
+	c.audioWriter = ws[0]
+
+	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
+	c.iceConnectedCtx = iceConnectedCtx
+	c.iceConnectedCtxCancel = iceConnectedCtxCancel
+
+	// Set the handler for ICE connection state
+	// This will notify you when the peer has connected/disconnected
+	c.peerConnection.OnICEConnectionStateChange(c.onICEConnectionStateChange)
+
+	// Set a handler for when a new remote track starts, this handler copies inbound RTP packets,
+	// replaces the SSRC and sends them back
+	c.peerConnection.OnTrack(c.saveOpusTrack)
+
+	// Create a audio track
+	audioTrack, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "audio/opus"}, "audio", "pion")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create audio track: %w", err)
+	}
+
+	rtpSender, err := peerConnection.AddTrack(audioTrack)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create RTP sender: %w", err)
+	}
+	c.rtpSender = rtpSender
+
+	gateway, err := janus.Connect(janusAddress)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to janus: %w", err)
+	}
+
+	session, err := gateway.Create()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create session: %w", err)
+	}
+
+	handle, err := session.Attach("janus.plugin.audiobridge")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create handle: %w", err)
+	}
+
+	c.audioBridgeHandle = handle
+
+	go c.watchHandle(c.audioBridgeHandle)
+
+	return c, nil
+}
+
 func (c *Call) onICEConnectionStateChange(connectionState webrtc.ICEConnectionState) {
 	c.logger.Info("connection state has changed", logger.String("state", connectionState.String()))
 	if connectionState == webrtc.ICEConnectionStateConnected {
@@ -221,88 +305,4 @@ func (c *Call) Close() error {
 	}
 
 	return nil
-}
-
-func NewCall(janusAddress string, logger logger.Logger) (*Call, error) {
-	c := &Call{logger: logger}
-
-	peerConnection, err := NewPeerConnectionWithOpusMediaEngine()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create peer connection: %w", err)
-	}
-	c.peerConnection = peerConnection
-
-	audioBuilder := samplebuilder.New(10, &codecs.OpusPacket{}, 48000)
-	c.audioBuilder = audioBuilder
-
-	w, err := os.OpenFile(fmt.Sprintf("/tmp/test-%d.opus", rand.Intn(100)), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open audio file: %w", err)
-	}
-
-	ws, err := webm.NewSimpleBlockWriter(w, []webm.TrackEntry{
-		{
-			Name:            "Audio",
-			TrackNumber:     1,
-			TrackUID:        12345,
-			CodecID:         "A_OPUS",
-			TrackType:       2,
-			DefaultDuration: 20000000,
-			Audio: &webm.Audio{
-				SamplingFrequency: 48000.0,
-				Channels:          2,
-			},
-		},
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create block write: %w", err)
-	}
-
-	c.audioWriter = ws[0]
-
-	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
-	c.iceConnectedCtx = iceConnectedCtx
-	c.iceConnectedCtxCancel = iceConnectedCtxCancel
-
-	// Set the handler for ICE connection state
-	// This will notify you when the peer has connected/disconnected
-	c.peerConnection.OnICEConnectionStateChange(c.onICEConnectionStateChange)
-
-	// Set a handler for when a new remote track starts, this handler copies inbound RTP packets,
-	// replaces the SSRC and sends them back
-	c.peerConnection.OnTrack(c.saveOpusTrack)
-
-	// Create a audio track
-	audioTrack, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "audio/opus"}, "audio", "pion")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create audio track: %w", err)
-	}
-
-	rtpSender, err := peerConnection.AddTrack(audioTrack)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create RTP sender: %w", err)
-	}
-	c.rtpSender = rtpSender
-
-	gateway, err := janus.Connect(janusAddress)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to janus: %w", err)
-	}
-
-	session, err := gateway.Create()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create session: %w", err)
-	}
-
-	handle, err := session.Attach("janus.plugin.audiobridge")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create handle: %w", err)
-	}
-
-	c.audioBridgeHandle = handle
-
-	go c.watchHandle(c.audioBridgeHandle)
-
-	return c, nil
 }
