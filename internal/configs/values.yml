@@ -1,0 +1,10 @@
+logger:
+  development: false
+  encoding: "json"
+  level: "warn"
+
+tracer:
+  enabled: false
+  host: "localhost"
+  port: 6831
+  sample-rate: 0.1

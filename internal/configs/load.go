@@ -3,7 +3,9 @@ package configs
 import (
 	"strings"
 
-	internal "github.com/snapp-incubator/ghodrat/new_internal"
+	"github.com/snapp-incubator/ghodrat/internal"
+	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"github.com/snapp-incubator/ghodrat/pkg/tracer"
 	"github.com/snapp-incubator/ghodrat/pkg/utils"
 )
 
@@ -12,7 +14,10 @@ var (
 	filePath  = "./internal/configs/values.yml"
 )
 
-type Janus struct{}
+type Janus struct {
+	Logger *logger.Config `koanf:"logger"`
+	Tracer *tracer.Config `koanf:"tracer"`
+}
 
 func LoadJanus(environment string) *Janus {
 	configs := new(Janus)
