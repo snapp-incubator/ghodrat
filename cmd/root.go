@@ -10,8 +10,8 @@ import (
 const (
 	errExecuteCMD = "failed to execute root command"
 
-	short = "short description"
-	long  = `long description`
+	short = "WebRTC stress testing tool"
+	long  = `ghodrat is a CMD tool used to stress test janus WebRTC media servers`
 )
 
 func main() {
