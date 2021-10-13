@@ -47,8 +47,8 @@ jobs:
 
       - name: Build & save the image
         run: ./.github/scripts/build.sh
-          "${{ github.event.repository.name }}"
-          "${{ github.sha }}"
+          ${{ github.event.repository.name }}
+          ${{ github.sha }}
           "janus"
 
       - name: Upload image tar
@@ -75,5 +75,5 @@ jobs:
           "${{ github.sha }}"
           "janus"
           ghcr.io
-          "${{ github.actor }}"
+          snapp-incubator
           "${{ secrets.GITHUB_TOKEN }}"
