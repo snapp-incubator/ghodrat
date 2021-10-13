@@ -1,7 +1,8 @@
 # !bin/sh
 
-project_name
-project_commit_sha
+project_name=$1
+project_commit_sha=$2
+commands="janus"
 
 export CURRENT_DATETIME=$(TZ=Asia/Tehran date '+%FT%T')
 
@@ -12,7 +13,7 @@ render() {
 
 buildDirectory="./build"
 
-for command in $COMMANDS; do
+for command in $commands; do
     # generate dockerfile for following builds
     render $buildDirectory/template.Dockerfile > $buildDirectory/$command.Dockerfile
 
