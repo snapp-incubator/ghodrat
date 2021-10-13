@@ -1,16 +1,25 @@
 ---
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: janus
-  labels:
-    app.kubernetes.io/name: ghodrat-janus
-data:
-  logger_development: "false"
-  logger_encoding: "json"
-  logger_level: "warn"
+kind: Template
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ${APP_NAME}
+      labels:
+        app.kubernetes.io/name: ${APP_NAME}
+    data:
+      logger_development: "false"
+      logger_encoding: "json"
+      logger_level: "warn"
 
-  tracer_enabled: "false"
-  tracer_host: "localhost"
-  tracer_port: "6831"
-  tracer_sample-rate: "0.1"
+      tracer_enabled: "false"
+      tracer_host: "localhost"
+      tracer_port: "6831"
+      tracer_sample-rate: "0.1"
+
+parameters:
+  - name: APP_NAME
+    displayName: app-name
+    required: false
+    value: "ghodrat-janus"

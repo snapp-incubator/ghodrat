@@ -1,43 +1,60 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ghodrat-janus
-  labels:
-    app.kubernetes.io/name: ghodrat-janus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: ghodrat-janus
-  template:
+apiVersion: v1
+kind: Template
+objects:
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
+      name: ${APP_NAME}
       labels:
-        app.kubernetes.io/name: ghodrat-janus
+        app.kubernetes.io/name: ${APP_NAME}
     spec:
-      containers:
-        - name: ghodrat-janus
-          image: ghcr.io/snapp-incubator/ghodrat-janus:main
-          imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-          resources:
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-          envFrom:
-            - configMapRef:
-                name: ghodrat-janus
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/name: ${APP_NAME}
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: ${APP_NAME}
+        spec:
+          containers:
+            - name: ${APP_NAME}
+              image: ${REGISTRY}/${OWNER}/${APP_NAME}:main
+              imagePullPolicy: Always
+              ports:
+                - name: http
+                  containerPort: 8080
+                  protocol: TCP
+              livenessProbe:
+                httpGet:
+                  path: /healthz
+                  port: http
+              readinessProbe:
+                httpGet:
+                  path: /healthz
+                  port: http
+              resources:
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+              envFrom:
+                - configMapRef:
+                    name: ${APP_NAME}
+
+parameters:
+  - name: APP_NAME
+    displayName: app-name
+    required: false
+    value: "ghodrat-janus"
+  - name: REGISTRY
+    displayName: registry
+    required: false
+    value: "ghcr.io"
+  - name: OWNER
+    displayName: owner
+    required: false
+    value: "snapp-incubator"
