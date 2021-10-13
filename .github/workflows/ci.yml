@@ -64,6 +64,9 @@ jobs:
     needs:
       - build
     steps:
+      - name: Checks out our project source code
+        uses: actions/checkout@v2
+
       - name: Download image tar
         uses: actions/download-artifact@v2
         with:
