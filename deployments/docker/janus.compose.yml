@@ -1,7 +1,7 @@
 ---
 version: "3"
 services:
-    ghodrat-janus:
+    ghodrat:
         image: ghcr.io/snapp-incubator/ghodrat-janus:main
         environment:
             logger_development: "false"
@@ -13,7 +13,7 @@ services:
             tracer_port: "6831"
             tracer_sample-rate: "0.1"
 
-    janus-gateway:
+    janus:
         image: canyan/janus-gateway:latest
         command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
         ports:
