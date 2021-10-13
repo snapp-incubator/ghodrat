@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   lint:
-    name: lint
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -74,9 +74,9 @@ jobs:
 
       - name: release images to the registry
         run: ./.github/scripts/release.sh
-          "${{ github.event.repository.name }}"
-          "${{ github.sha }}"
+          ${{ github.event.repository.name }}
+          ${{ github.sha }}
           "janus"
           ghcr.io
-          snapp-incubator
-          "${{ secrets.GITHUB_TOKEN }}"
+          ${{ github.actor }}
+          ${{ secrets.GITHUB_TOKEN }}
