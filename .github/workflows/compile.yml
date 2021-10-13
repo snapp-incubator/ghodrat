@@ -18,7 +18,7 @@ jobs:
       - name: install dependencies
         run: go mod vendor
 
-      - name: Install & Cache dependencies
+      - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: ./vendor
@@ -39,7 +39,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install & Cache dependencies
+      - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: ./vendor
@@ -50,7 +50,7 @@ jobs:
       - name: build binary
         run: go build -mod=vendor -o ./output ./cmd/root.go
 
-      - name: Install & Upload build binary
+      - name: Upload build binary
         uses: actions/upload-artifact@v2
         with:
           name: build-binary
