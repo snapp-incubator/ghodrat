@@ -4,6 +4,10 @@ WORKDIR /app
 
 COPY . .
 
+RUN pwd
+
+RUN ls -lah
+
 RUN go mod download && make generate
 
 RUN go build -o /bin/app ./cmd/root.go
