@@ -2,7 +2,7 @@
 
 project_name=$1
 project_commit_sha=$2
-commands="janus"
+commands=$3
 
 export CURRENT_DATETIME=$(TZ=Asia/Tehran date '+%FT%T')
 

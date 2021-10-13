@@ -2,11 +2,10 @@
 
 project_name=$1
 project_commit_sha=$2
-commands="janus"
-
-registry=$3
-username=$4
-password=$5
+commands=$3
+registry=$4
+username=$5
+password=$6
 
 # logs docker information
 docker info

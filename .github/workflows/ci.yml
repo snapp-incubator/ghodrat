@@ -49,6 +49,7 @@ jobs:
         run: ./.github/scripts/build.sh
           "${{ github.event.repository.name }}"
           "${{ github.sha }}"
+          "janus"
 
       - name: Upload image tar
         uses: actions/upload-artifact@v2
@@ -72,6 +73,7 @@ jobs:
         run: ./.github/scripts/release.sh
           "${{ github.event.repository.name }}"
           "${{ github.sha }}"
+          "janus"
           ghcr.io
           "${{ github.actor }}"
           "${{ secrets.GITHUB_TOKEN }}"
