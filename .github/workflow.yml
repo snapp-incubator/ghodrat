@@ -1,0 +1,69 @@
+name: CI
+
+on: [push]
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          args: --enable-all
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go environment
+        uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17.1"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run tests
+        run: make unit-test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.x
+
+      - name: Checks out our project source code
+        uses: actions/checkout@v2
+
+      - name: Build & save the image
+        run: ./.github/scripts/build.sh
+
+      - name: Upload image tar
+        uses: actions/upload-artifact@v2
+        with:
+          name: images
+          path: |
+            $project_name-janus-$project_commit_sha.tar
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Download image tar
+        uses: actions/download-artifact@v2
+        with:
+          name: images
+
+      - name: release images to the registry
+        run: ./.github/scripts/release.sh
