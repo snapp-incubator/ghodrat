@@ -2,7 +2,7 @@ name: Build
 
 on:
   workflow_run:
-    workflows: ["compile"]
+    workflows: ["Compile"]
     branches: [master, develop]
     types:
       - completed
