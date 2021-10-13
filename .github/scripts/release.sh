@@ -1,11 +1,12 @@
 # !bin/sh
 
-project_name
-project_commit_sha
+project_name=$1
+project_commit_sha=$2
+commands="janus"
 
-registry
-username
-password
+registry=$3
+username=$4
+password=$5
 
 # logs docker information
 docker info
@@ -13,7 +14,7 @@ docker info
 # login to provided docker registry
 docker login -u $username -p $password $registry
     
-for command in $COMMANDS; do
+for command in $commands; do
     # load and unarchive docker image tar file 
     docker load --input $project_name-"$command"-$project_commit_sha.tar
 
