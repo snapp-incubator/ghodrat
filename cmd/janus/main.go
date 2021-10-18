@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/snapp-incubator/ghodrat/internal/configs"
-	"github.com/snapp-incubator/ghodrat/internal/webrtc"
+	webrtc "github.com/snapp-incubator/ghodrat/internal/webrtc_old"
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 	"github.com/spf13/cobra"
 )
