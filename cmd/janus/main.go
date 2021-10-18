@@ -6,8 +6,9 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/configs"
-	webrtc "github.com/snapp-incubator/ghodrat/internal/webrtc_old"
+	"github.com/snapp-incubator/ghodrat/internal/server/janus"
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 	"github.com/spf13/cobra"
 )
@@ -58,36 +59,30 @@ func run(cmd *cobra.Command, _ []string) {
 		lg.Fatal("audio file does not exist", logger.String("audio_file", audioFile))
 	}
 
-	call, err := webrtc.NewCall(url, lg.Named("caller"))
-	if err != nil {
-		lg.Fatal("failed to create the call", logger.Error(err))
+	client := &client.Client{
+		Config: nil,
+		Logger: nil,
 	}
 
-	go func() {
-		if err := call.ReadRTCPPackets(); err != nil {
-			lg.Error("failed to read RTCP packets", logger.Error(err))
-		}
-	}()
-
-	go func() {
-		if err := call.StreamAudioFile(audioFile); err != nil {
-			lg.Fatal("failed to stream audio", logger.Error(err))
-		}
-	}()
-
-	if err := call.CreateAndSetLocalOffer(); err != nil {
-		lg.Fatal("failed to create and set local SDP offer", logger.Error(err))
+	server := janus.Janus{
+		Config: nil,
+		Logger: nil,
+		Client: client,
 	}
 
-	if err := call.Call(); err != nil {
-		lg.Fatal("failed to call via janus", logger.Error(err))
-	}
+	server.Initiate()
+
+	go func() { server.ReadRTCPPackets() }()
+
+	go func() { client.StreamAudioFile() }()
+
+	client.CreateAndSetLocalOffer()
+
+	server.Call()
 
 	closed := make(chan os.Signal, 1)
 	signal.Notify(closed, os.Interrupt)
 	<-closed
 
-	if err := call.Close(); err != nil {
-		lg.Error("failed to close the call", logger.Error(err))
-	}
+	server.Close()
 }

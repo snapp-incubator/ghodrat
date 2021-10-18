@@ -1,17 +1,19 @@
-package webrtc
+package client
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"time"
 
+	"github.com/pion/webrtc/v3"
 	"github.com/pion/webrtc/v3/pkg/media"
 	"github.com/pion/webrtc/v3/pkg/media/oggreader"
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-func (manager *Manager) StreamAudioFile() error {
+func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter func(sample media.Sample) error) error {
 	audioFileAddress := manager.Config.AudioFileAddress
 
 	_, err := os.Stat(audioFileAddress)
@@ -31,7 +33,7 @@ func (manager *Manager) StreamAudioFile() error {
 	}
 
 	// Wait for connection established
-	<-manager.iceConnectedCtx.Done()
+	<-connectedCtx.Done()
 
 	// Keep track of last granule, the difference is the amount of samples in the buffer
 	var lastGranule uint64
@@ -49,11 +51,31 @@ func (manager *Manager) StreamAudioFile() error {
 		sampleCount := float64(pageHeader.GranulePosition - lastGranule)
 		lastGranule = pageHeader.GranulePosition
 		sampleDuration := time.Duration((sampleCount/48000)*1000) * time.Millisecond
+		sample := media.Sample{Data: pageData, Duration: sampleDuration}
 
-		if err = manager.audioTrack.WriteSample(media.Sample{Data: pageData, Duration: sampleDuration}); err != nil {
+		if err = trackWriter(sample); err != nil {
 			return fmt.Errorf("failed to write media sample: %w", err)
 		}
 
 		time.Sleep(sampleDuration)
 	}
+}
+
+// OnTrack sets an event handler which is called when remote track arrives from a remote peer.
+func (manager *Client) OnTrack(callback func(*webrtc.TrackRemote)) {
+	manager.connection.OnTrack(
+		func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+			callback(track)
+		},
+	)
+}
+
+// AddTrack adds a Track to the PeerConnection
+func (manager *Client) AddTrack(track *webrtc.TrackLocalStaticSample) *webrtc.RTPSender {
+	rtpSender, err := manager.connection.AddTrack(track)
+	if err != nil {
+		manager.Logger.Fatal("failed to create RTP sender", logger.Error(err))
+	}
+
+	return rtpSender
 }

@@ -1,4 +1,4 @@
-package webrtc
+package client
 
 type Config struct {
 	AudioFileAddress string

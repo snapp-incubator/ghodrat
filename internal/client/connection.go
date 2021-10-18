@@ -1,13 +1,14 @@
-package webrtc
+package client
 
 import (
-	"fmt"
-
 	"github.com/pion/webrtc/v3"
+	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-// NewPeerConnection returns webrtc-peer-connection with opus media-engine
-func (manager *Manager) NewPeerConnection() (*webrtc.PeerConnection, error) {
+// InitiatePeerConnection returns webrtc-peer-connection with opus media-engine
+func (manager *Client) InitiatePeerConnection() {
+	var err error
+
 	// A MediaEngine defines the codecs supported by a PeerConnection
 	mediaEngine := &webrtc.MediaEngine{}
 
@@ -24,8 +25,8 @@ func (manager *Manager) NewPeerConnection() (*webrtc.PeerConnection, error) {
 	}
 
 	// Add OPUS codec (audio format)
-	if err := mediaEngine.RegisterCodec(codec, webrtc.RTPCodecTypeAudio); err != nil {
-		return nil, fmt.Errorf("failed to register opus codec: %w", err)
+	if err = mediaEngine.RegisterCodec(codec, webrtc.RTPCodecTypeAudio); err != nil {
+		manager.Logger.Fatal("failed to register opus codec", logger.Error(err))
 	}
 
 	// Create the API object with the MediaEngine
@@ -40,10 +41,19 @@ func (manager *Manager) NewPeerConnection() (*webrtc.PeerConnection, error) {
 	}
 
 	// Create a new RTCPeerConnection
-	peerConnection, err := api.NewPeerConnection(config)
+	manager.connection, err = api.NewPeerConnection(config)
 	if err != nil {
-		return nil, err
+		manager.Logger.Fatal("failed to close peer connection", logger.Error(err))
 	}
+}
 
-	return peerConnection, nil
+func (manager *Client) OnICEConnectionStateChange(callback func(webrtc.ICEConnectionState)) {
+	manager.connection.OnICEConnectionStateChange(callback)
+}
+
+// NewPeerConnection returns webrtc-peer-connection with opus media-engine
+func (manager *Client) ClosePeerConnection() {
+	if err := manager.connection.Close(); err != nil {
+		manager.Logger.Fatal("failed to close peer connection", logger.Error(err))
+	}
 }
