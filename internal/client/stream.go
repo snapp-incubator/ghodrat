@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"time"
@@ -13,7 +12,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter func(sample media.Sample) error) error {
+func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter func(sample media.Sample) error) {
 	audioFileAddress := manager.Config.AudioFileAddress
 
 	_, err := os.Stat(audioFileAddress)
@@ -54,7 +53,7 @@ func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter
 		sample := media.Sample{Data: pageData, Duration: sampleDuration}
 
 		if err = trackWriter(sample); err != nil {
-			return fmt.Errorf("failed to write media sample: %w", err)
+			manager.Logger.Fatal("failed to write media sample", logger.Error(err))
 		}
 
 		time.Sleep(sampleDuration)

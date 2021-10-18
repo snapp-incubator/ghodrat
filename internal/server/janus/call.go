@@ -7,7 +7,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-func (j *Janus) Call() error {
+func (j *Janus) call() error {
 	create, err := j.audioBridgeHandle.Request(map[string]interface{}{
 		"request": "create",
 	})

@@ -33,7 +33,7 @@ type Janus struct {
 	iceConnectedCtxCancel context.CancelFunc
 }
 
-func (j Janus) Initiate() {
+func (j Janus) initiate() {
 	j.Client.InitiatePeerConnection()
 
 	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
@@ -105,10 +105,10 @@ func (j Janus) Initiate() {
 	go j.watchHandle(j.audioBridgeHandle)
 }
 
-// ReadRTCPPackets reads incoming RTCP packets
+// readRTCPPackets reads incoming RTCP packets
 // Before these packets are returned they are processed by interceptors. For things
 // like NACK this needs to be called.
-func (j *Janus) ReadRTCPPackets() {
+func (j *Janus) readRTCPPackets() {
 	rtcpBuf := make([]byte, 1500)
 	for {
 		if _, _, err := j.rtpSender.Read(rtcpBuf); err != nil {
@@ -139,13 +139,5 @@ func (j *Janus) watchHandle(handle *janus.Handle) {
 		case *janus.EventMsg:
 			j.Logger.Info("EventMsg", logger.Any("data", msg.Plugindata.Data))
 		}
-	}
-}
-
-func (j *Janus) Close() {
-	j.Client.ClosePeerConnection()
-
-	if err := j.audioWriter.Close(); err != nil {
-		j.Logger.Fatal("failed to close audio writer", logger.Error(err))
 	}
 }

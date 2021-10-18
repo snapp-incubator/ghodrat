@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/snapp-incubator/ghodrat/internal"
+	"github.com/snapp-incubator/ghodrat/internal/client"
+	"github.com/snapp-incubator/ghodrat/internal/server/janus"
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 	"github.com/snapp-incubator/ghodrat/pkg/tracer"
 	"github.com/snapp-incubator/ghodrat/pkg/utils"
@@ -14,18 +16,16 @@ var (
 	filePath  = "./internal/configs/values.yml"
 )
 
-type Janus struct {
+type Configs struct {
 	Logger *logger.Config `koanf:"logger"`
 	Tracer *tracer.Config `koanf:"tracer"`
+	Client *client.Config `koanf:"client"`
+	Janus  *janus.Config  `koanf:"janus"`
 }
 
-func LoadJanus(environment string) *Janus {
-	configs := new(Janus)
-	load(environment, configs)
-	return configs
-}
+func Load(environment string) *Configs {
+	configs := new(Configs)
 
-func load(environment string, configs interface{}) {
 	var source utils.Source
 
 	if environment == "prod" {
@@ -36,4 +36,6 @@ func load(environment string, configs interface{}) {
 
 	utils.Configs{Source: source, EnvPrefix: envPrefix, FilePath: filePath}.
 		Load(configs)
+
+	return configs
 }

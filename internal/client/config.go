@@ -1,13 +1,13 @@
 package client
 
 type Config struct {
-	AudioFileAddress string
+	AudioFileAddress string `koanf:"audio-file-address"`
 	Connection       struct {
-		STUNServers []string
+		STUNServers []string `koanf:"stun-servers"`
 		RTPCodec    struct {
-			ClockRate   uint32
-			Channels    uint16
-			PayloadType uint8
+			ClockRate   uint32 `koanf:"clock-rate"`
+			Channels    uint16 `koanf:"channels"`
+			PayloadType uint8  `koanf:"payload-type"`
 		}
-	}
+	} `koanf:"connection"`
 }
