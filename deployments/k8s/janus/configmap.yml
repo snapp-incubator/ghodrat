@@ -11,12 +11,26 @@ objects:
     data:
       logger_development: "false"
       logger_encoding: "json"
-      logger_level: "warn"
+      logger_level: "info"
 
       tracer_enabled: "false"
       tracer_host: "localhost"
       tracer_port: "6831"
       tracer_sample-rate: "0.1"
+
+      call-count: "20"
+
+      client_audio-file-address: "./static/audio.ogg"
+      client_connection_stun-servers:
+        - "stun:stun.l.google.com:19302"
+        - "stun:stun1.l.google.com:19302"
+      client_connection_rtp-codec_clock-rate: 48000
+      client_connection_rtp-codec_channels: 2
+      client_connection_rtp-codec_payload-type: 111
+
+    janus_address: "janus"
+    janus_max-late: 10
+    janus_sample-rate: 48000
 
 parameters:
   - name: APP_NAME

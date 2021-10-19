@@ -1,6 +1,6 @@
 ---
 logger:
-  development: false
+  development: true
   encoding: "console"
   level: "warn"
 

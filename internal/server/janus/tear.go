@@ -4,20 +4,20 @@ import (
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-func (j *Janus) TearUp(index int, doneChannel chan bool) {
-	j.Logger.Info("Inititate janus", logger.Int("index", index))
+func (j *Janus) TearUp(doneChannel chan bool) {
+	j.Logger.Info("Inititate janus")
 	j.initiate()
 
-	j.Logger.Info("read RTCP Packets", logger.Int("index", index))
+	j.Logger.Info("read RTCP Packets")
 	go func() { j.readRTCPPackets() }()
 
-	j.Logger.Info("Stream Audio File", logger.Int("index", index))
+	j.Logger.Info("Stream Audio File")
 	go func() { j.Client.StreamAudioFile(j.iceConnectedCtx, j.audioTrack.WriteSample, doneChannel) }()
 
-	j.Logger.Info("Create And Set Local Offer", logger.Int("index", index))
+	j.Logger.Info("Create And Set Local Offer")
 	j.Client.CreateAndSetLocalOffer()
 
-	j.Logger.Info("start call", logger.Int("index", index))
+	j.Logger.Info("start call")
 	j.call()
 }
 

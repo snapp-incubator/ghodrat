@@ -2,8 +2,8 @@ package janus
 
 import (
 	"math/rand"
-	"os"
-	"os/signal"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/snapp-incubator/ghodrat/internal/client"
@@ -41,25 +41,31 @@ func run(cmd *cobra.Command, _ []string) {
 
 	lg := logger.NewZap(configs.Logger)
 
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(configs.CallCount)
+
 	for index := 0; index < configs.CallCount; index++ {
+		logger := lg.Named("groutine:" + strconv.Itoa(index+1))
+
 		server := janus.Janus{
 			Config: configs.Janus,
-			Logger: lg,
+			Logger: logger,
 			Client: &client.Client{
 				Config: configs.Client,
-				Logger: lg,
+				Logger: logger,
 			},
 		}
 
-		go func(server janus.Janus, index int) {
+		go func(server janus.Janus) {
 			doneChannel := make(chan bool)
-			server.TearUp(index, doneChannel)
+			server.TearUp(doneChannel)
 			<-doneChannel
 			server.TearDown()
-		}(server, index)
+			waitGroup.Done()
+		}(server)
 	}
 
-	closed := make(chan os.Signal, 1)
-	signal.Notify(closed, os.Interrupt)
-	<-closed
+	waitGroup.Wait()
+
+	lg.Info("all calls has been finished successfully")
 }
