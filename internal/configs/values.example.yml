@@ -1,7 +1,7 @@
 ---
 logger:
   development: false
-  encoding: "json"
+  encoding: "console"
   level: "warn"
 
 tracer:
@@ -13,7 +13,9 @@ tracer:
 client:
   audio-file-address: "./static/audio.ogg"
   connection:
-    stun-servers: "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302"
+    stun-servers:
+      - "stun:stun.l.google.com:19302"
+      - "stun:stun1.l.google.com:19302"
     rtp-codec:
       clock-rate: 48000
       channels: 2

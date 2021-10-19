@@ -33,7 +33,7 @@ type Janus struct {
 	iceConnectedCtxCancel context.CancelFunc
 }
 
-func (j Janus) initiate() {
+func (j *Janus) initiate() {
 	j.Client.InitiatePeerConnection()
 
 	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
@@ -65,9 +65,7 @@ func (j Janus) initiate() {
 
 	j.audioWriter = ws[0]
 
-	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
-	j.iceConnectedCtx = iceConnectedCtx
-	j.iceConnectedCtxCancel = iceConnectedCtxCancel
+	j.iceConnectedCtx, j.iceConnectedCtxCancel = context.WithCancel(context.Background())
 
 	// Set the handler for ICE connection state
 	// This will notify you when the peer has connected/disconnected

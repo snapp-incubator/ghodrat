@@ -13,7 +13,10 @@ import (
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
 )
 
-func (client *Client) StreamAudioFile(connectedCtx context.Context, trackWriter func(sample media.Sample) error) {
+func (client *Client) StreamAudioFile(
+	connectedCtx context.Context,
+	trackWriter func(sample media.Sample) error,
+	doneChannel chan bool) {
 	audioFileAddress := client.Config.AudioFileAddress
 
 	_, err := os.Stat(audioFileAddress)

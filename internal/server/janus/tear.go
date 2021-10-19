@@ -1,6 +1,8 @@
 package janus
 
-import "github.com/snapp-incubator/ghodrat/pkg/logger"
+import (
+	"github.com/snapp-incubator/ghodrat/pkg/logger"
+)
 
 func (j *Janus) TearUp() {
 	j.initiate()
