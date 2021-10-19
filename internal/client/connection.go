@@ -6,7 +6,7 @@ import (
 )
 
 // InitiatePeerConnection returns webrtc-peer-connection with opus media-engine.
-func (client *Client) InitiatePeerConnection() {
+func (client *Client) CreatePeerConnection() {
 	var err error
 
 	// A MediaEngine defines the codecs supported by a PeerConnection

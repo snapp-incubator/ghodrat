@@ -41,20 +41,25 @@ func run(cmd *cobra.Command, _ []string) {
 
 	lg := logger.NewZap(configs.Logger)
 
-	server := janus.Janus{
-		Config: configs.Janus,
-		Logger: lg,
-		Client: &client.Client{
-			Config: configs.Client,
+	for index := 0; index < configs.CallCount; index++ {
+		server := janus.Janus{
+			Config: configs.Janus,
 			Logger: lg,
-		},
-	}
+			Client: &client.Client{
+				Config: configs.Client,
+				Logger: lg,
+			},
+		}
 
-	server.TearUp()
+		go func(server janus.Janus, index int) {
+			doneChannel := make(chan bool)
+			server.TearUp(index, doneChannel)
+			<-doneChannel
+			server.TearDown()
+		}(server, index)
+	}
 
 	closed := make(chan os.Signal, 1)
 	signal.Notify(closed, os.Interrupt)
 	<-closed
-
-	server.TearDown()
 }

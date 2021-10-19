@@ -46,7 +46,8 @@ func (client *Client) StreamAudioFile(
 		if err != nil {
 			if errors.Is(err, io.EOF) {
 				client.Logger.Info("all audio pages parsed and sent")
-				os.Exit(0)
+				doneChannel <- true
+				return
 			}
 
 			client.Logger.Fatal("failed to parse ogg", logger.Error(err))

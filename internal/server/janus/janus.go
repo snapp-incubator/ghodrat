@@ -34,7 +34,7 @@ type Janus struct {
 }
 
 func (j *Janus) initiate() {
-	j.Client.InitiatePeerConnection()
+	j.Client.CreatePeerConnection()
 
 	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
 

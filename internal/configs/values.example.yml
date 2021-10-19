@@ -10,6 +10,8 @@ tracer:
   port: 6831
   sample-rate: 0.1
 
+call-count: 1
+
 client:
   audio-file-address: "./static/audio.ogg"
   connection:

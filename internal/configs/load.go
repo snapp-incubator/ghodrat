@@ -17,10 +17,11 @@ var (
 )
 
 type Configs struct {
-	Logger *logger.Config `koanf:"logger"`
-	Tracer *tracer.Config `koanf:"tracer"`
-	Client *client.Config `koanf:"client"`
-	Janus  *janus.Config  `koanf:"janus"`
+	Logger    *logger.Config `koanf:"logger"`
+	Tracer    *tracer.Config `koanf:"tracer"`
+	CallCount int            `koanf:"call-count"`
+	Client    *client.Config `koanf:"client"`
+	Janus     *janus.Config  `koanf:"janus"`
 }
 
 func Load(environment string) *Configs {
