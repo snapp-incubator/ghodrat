@@ -10,9 +10,9 @@ FROM alpine:latest
 
 RUN apk add --no-cache libc6-compat
 
-WORKDIR /bin/
+COPY --from=builder ./static/audio.ogg /bin/ghodrat
 
-COPY --from=builder /bin/app .
+COPY --from=builder /bin/app /bin/ghodrat
 
 LABEL org.opencontainers.image.source="https://github.com/snapp-incubator/ghodrat-%%COMMAND%%"
 

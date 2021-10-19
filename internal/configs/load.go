@@ -1,8 +1,6 @@
 package configs
 
 import (
-	"strings"
-
 	"github.com/snapp-incubator/ghodrat/internal"
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/server/janus"
@@ -12,7 +10,7 @@ import (
 )
 
 var (
-	envPrefix = strings.ToUpper(internal.Subsystem) + "_"
+	envPrefix = internal.Subsystem + "_"
 	filePath  = "./internal/configs/values.yml"
 )
 

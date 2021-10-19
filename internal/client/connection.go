@@ -37,7 +37,7 @@ func (client *Client) CreatePeerConnection() {
 	config := webrtc.Configuration{
 		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
 		ICEServers: []webrtc.ICEServer{
-			{URLs: client.Config.Connection.STUNServers},
+			{URLs: []string{client.Config.Connection.STUNServer}},
 		},
 	}
 

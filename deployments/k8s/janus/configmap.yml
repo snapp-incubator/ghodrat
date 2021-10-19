@@ -1,39 +1,28 @@
 ---
 apiVersion: v1
-kind: Template
-objects:
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: ${APP_NAME}
-      labels:
-        app.kubernetes.io/name: ${APP_NAME}
-    data:
-      logger_development: "false"
-      logger_encoding: "json"
-      logger_level: "info"
+kind: ConfigMap
+metadata:
+  name: "ghodrat-janus"
+  labels:
+    app.kubernetes.io/name: "ghodrat-janus"
+data:
+  ghodrat_logger_development: "false"
+  ghodrat_logger_encoding: "json"
+  ghodrat_logger_level: "info"
 
-      tracer_enabled: "false"
-      tracer_host: "localhost"
-      tracer_port: "6831"
-      tracer_sample-rate: "0.1"
+  tracer_enabled: "false"
+  tracer_host: "localhost"
+  tracer_port: "6831"
+  tracer_sample-rate: "0.1"
 
-      call-count: "20"
+  call-count: "3"
 
-      client_audio-file-address: "./static/audio.ogg"
-      client_connection_stun-servers:
-        - "stun:stun.l.google.com:19302"
-        - "stun:stun1.l.google.com:19302"
-      client_connection_rtp-codec_clock-rate: 48000
-      client_connection_rtp-codec_channels: 2
-      client_connection_rtp-codec_payload-type: 111
+  client_audio-file-address: "./static/audio.ogg"
+  client_connection_stun-servers: "stun:stun.l.google.com:19302"
+  client_connection_rtp-codec_clock-rate: "48000"
+  client_connection_rtp-codec_channels: "2"
+  client_connection_rtp-codec_payload-type: "111"
 
-    janus_address: "janus"
-    janus_max-late: 10
-    janus_sample-rate: 48000
-
-parameters:
-  - name: APP_NAME
-    displayName: app-name
-    required: false
-    value: "ghodrat-janus"
+  janus_address: "janus"
+  janus_max-late: "10"
+  janus_sample-rate: "48000"
