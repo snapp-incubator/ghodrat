@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/snapp-incubator/ghodrat/internal/client"
-	"github.com/snapp-incubator/ghodrat/internal/configs"
+	"github.com/snapp-incubator/ghodrat/internal/config"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
 	"github.com/snapp-incubator/ghodrat/internal/server/janus"
 	"github.com/spf13/cobra"
@@ -17,15 +17,12 @@ const (
 	use     = `janus`
 	short   = `janus WebRTC stress testing tool`
 	long    = `janus  is a CMD tool used to stress test janus WebRTC media servers`
-	example = `janus --env dev --call-count 5`
+	example = `janus`
 )
 
 func Command() *cobra.Command {
 	// nolint: exhaustivestruct
 	cmd := &cobra.Command{Use: use, Short: short, Long: long, Example: example, Run: run, PreRun: preRun}
-
-	envFlag := "set config environment, default is dev"
-	cmd.Flags().StringP("env", "e", "", envFlag)
 
 	return cmd
 }
@@ -35,9 +32,7 @@ func preRun(cmd *cobra.Command, _ []string) {
 }
 
 func run(cmd *cobra.Command, _ []string) {
-	env := cmd.Flag("env").Value.String()
-
-	configs := configs.Load(env)
+	configs := config.New()
 
 	lg := logger.NewZap(configs.Logger)
 
