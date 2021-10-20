@@ -17,7 +17,7 @@ import (
 )
 
 type Janus struct {
-	Logger zap.Logger
+	Logger *zap.Logger
 	Client *client.Client
 	Config *Config
 
