@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod download  && go build -o /bin/app ./cmd/root.go
+RUN go mod download  && go build -o /bin/app ./cmd/ghodrat/main.go
 
 FROM alpine:latest
 
-RUN apk add --no-cache libc6-compat 
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /bin/
 
