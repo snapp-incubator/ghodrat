@@ -47,6 +47,7 @@ func (client *Client) StreamAudioFile(
 			if errors.Is(err, io.EOF) {
 				client.Logger.Info("all audio pages parsed and sent")
 				doneChannel <- true
+
 				return
 			}
 
