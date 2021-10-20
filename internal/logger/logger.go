@@ -28,11 +28,12 @@ func (cfg *Config) getEncoder() zapcore.Encoder {
 	var encoderConfig zapcore.EncoderConfig
 	if cfg.Development {
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
+		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	} else {
 		encoderConfig = zap.NewProductionEncoderConfig()
+		encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	}
 
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	var encoder zapcore.Encoder
