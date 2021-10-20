@@ -1,6 +1,7 @@
 package tracer
 
 import (
+	"log"
 	"strconv"
 
 	"go.opentelemetry.io/otel"
@@ -13,9 +14,11 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func New(cfg *Config, namespace string, subsystem string) (trace.Tracer, error) {
-	var exporter sdktrace.SpanExporter
-	var err error
+func New(cfg *Config, namespace string, subsystem string) trace.Tracer {
+	var (
+		exporter sdktrace.SpanExporter
+		err      error
+	)
 
 	if !cfg.Enabled {
 		exporter, err = stdout.New(stdout.WithPrettyPrint())
@@ -29,7 +32,7 @@ func New(cfg *Config, namespace string, subsystem string) (trace.Tracer, error) 
 	}
 
 	if err != nil {
-		return nil, err
+		log.Fatalf("failed to initialize export pipeline: %v", err)
 	}
 
 	res, err := resource.Merge(
@@ -39,9 +42,8 @@ func New(cfg *Config, namespace string, subsystem string) (trace.Tracer, error) 
 			semconv.ServiceNameKey.String(subsystem),
 		),
 	)
-
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	bsp := sdktrace.NewBatchSpanProcessor(exporter)
@@ -58,5 +60,5 @@ func New(cfg *Config, namespace string, subsystem string) (trace.Tracer, error) 
 
 	otel.SetTextMapPropagator(tc)
 
-	return otel.Tracer("dispatching/spotman"), nil
+	return otel.Tracer("snapp-incubator/ghodrat")
 }

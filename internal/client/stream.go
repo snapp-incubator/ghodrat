@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"time"
@@ -9,26 +10,29 @@ import (
 	"github.com/pion/webrtc/v3"
 	"github.com/pion/webrtc/v3/pkg/media"
 	"github.com/pion/webrtc/v3/pkg/media/oggreader"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
-func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter func(sample media.Sample) error) {
-	audioFileAddress := manager.Config.AudioFileAddress
+func (client *Client) StreamAudioFile(
+	connectedCtx context.Context,
+	trackWriter func(sample media.Sample) error,
+	doneChannel chan bool) {
+	audioFileAddress := client.Config.AudioFileAddress
 
 	_, err := os.Stat(audioFileAddress)
 	if os.IsNotExist(err) {
-		manager.Logger.Fatal("audio file does not exist", logger.String("path", audioFileAddress))
+		client.Logger.Fatal("audio file does not exist", zap.String("path", audioFileAddress))
 	}
 
 	file, err := os.Open(audioFileAddress)
 	if err != nil {
-		manager.Logger.Fatal("failed to open audio file", logger.Error(err))
+		client.Logger.Fatal("failed to open audio file", zap.Error(err))
 	}
 
 	// Open on oggfile in non-checksum mode.
 	ogg, _, err := oggreader.NewWith(file)
 	if err != nil {
-		manager.Logger.Fatal("failed to read ogg audio", logger.Error(err))
+		client.Logger.Fatal("failed to read ogg audio", zap.Error(err))
 	}
 
 	// Wait for connection established
@@ -36,24 +40,30 @@ func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter
 
 	// Keep track of last granule, the difference is the amount of samples in the buffer
 	var lastGranule uint64
+
 	for {
 		pageData, pageHeader, err := ogg.ParseNextPage()
 		if err != nil {
-			if err == io.EOF {
-				manager.Logger.Info("all audio pages parsed and sent")
-				os.Exit(0)
+			if errors.Is(err, io.EOF) {
+				client.Logger.Info("all audio pages parsed and sent")
+				doneChannel <- true
+
+				return
 			}
-			manager.Logger.Fatal("failed to parse ogg", logger.Error(err))
+
+			client.Logger.Fatal("failed to parse ogg", zap.Error(err))
 		}
 
 		// The amount of samples is the difference between the last and current timestamp
 		sampleCount := float64(pageHeader.GranulePosition - lastGranule)
 		lastGranule = pageHeader.GranulePosition
+		// nolint: gomnd
 		sampleDuration := time.Duration((sampleCount/48000)*1000) * time.Millisecond
+		// nolint: exhaustivestruct
 		sample := media.Sample{Data: pageData, Duration: sampleDuration}
 
 		if err = trackWriter(sample); err != nil {
-			manager.Logger.Fatal("failed to write media sample", logger.Error(err))
+			client.Logger.Fatal("failed to write media sample", zap.Error(err))
 		}
 
 		time.Sleep(sampleDuration)
@@ -61,19 +71,19 @@ func (manager *Client) StreamAudioFile(connectedCtx context.Context, trackWriter
 }
 
 // OnTrack sets an event handler which is called when remote track arrives from a remote peer.
-func (manager *Client) OnTrack(callback func(*webrtc.TrackRemote)) {
-	manager.connection.OnTrack(
+func (client *Client) OnTrack(callback func(*webrtc.TrackRemote)) {
+	client.connection.OnTrack(
 		func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
 			callback(track)
 		},
 	)
 }
 
-// AddTrack adds a Track to the PeerConnection
-func (manager *Client) AddTrack(track *webrtc.TrackLocalStaticSample) *webrtc.RTPSender {
-	rtpSender, err := manager.connection.AddTrack(track)
+// AddTrack adds a Track to the PeerConnection.
+func (client *Client) AddTrack(track *webrtc.TrackLocalStaticSample) *webrtc.RTPSender {
+	rtpSender, err := client.connection.AddTrack(track)
 	if err != nil {
-		manager.Logger.Fatal("failed to create RTP sender", logger.Error(err))
+		client.Logger.Fatal("failed to create RTP sender", zap.Error(err))
 	}
 
 	return rtpSender

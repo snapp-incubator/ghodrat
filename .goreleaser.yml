@@ -1,0 +1,25 @@
+---
+project_name: ghodrat
+
+release:
+  github:
+    owner: snapp-incubator
+    name: ghodrat
+
+checksum: {}
+
+builds:
+  - binary: gosimac
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    main: ./cmd/ghodrat/main.go
+
+archives:
+  - id: binary
+    format: binary
+  - id: default
+    format: tar.gz

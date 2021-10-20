@@ -4,18 +4,21 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod download  && go build -o /bin/app ./cmd/root.go
+RUN go mod download  && \
+    mkdir /bin/ghodrat && \
+    go build -o /bin/ghodrat/app ./cmd/ghodrat/main.go && \
+    cp ./static/audio.ogg /bin/ghodrat
 
 FROM alpine:latest
 
-RUN apk add --no-cache libc6-compat 
+RUN apk add --no-cache libc6-compat && mkdir /bin/ghodrat
 
-WORKDIR /bin/
+COPY --from=builder /bin/ghodrat/audio.ogg /bin/ghodrat
 
-COPY --from=builder /bin/app .
+COPY --from=builder /bin/ghodrat/app /bin/ghodrat
 
 LABEL org.opencontainers.image.source="https://github.com/snapp-incubator/ghodrat-%%COMMAND%%"
 
-ENTRYPOINT ["/bin/app"]
+ENTRYPOINT ["/bin/ghodrat/app"]
 
 CMD ["%%COMMAND%%", "--env=prod"]

@@ -1,9 +1,10 @@
-package main
+package cmd
 
 import (
-	"fmt"
+	"log"
+	"os"
 
-	"github.com/snapp-incubator/ghodrat/cmd/janus"
+	"github.com/snapp-incubator/ghodrat/internal/cmd/janus"
 	"github.com/spf13/cobra"
 )
 
@@ -14,12 +15,18 @@ const (
 	long  = `ghodrat is a CMD tool used to stress test janus WebRTC media servers`
 )
 
-func main() {
+// ExitFailure status code.
+const ExitFailure = 1
+
+func Execute() {
+	// nolint: exhaustivestruct
 	cmd := &cobra.Command{Short: short, Long: long}
+
 	cmd.AddCommand(janus.Command())
 
 	if err := cmd.Execute(); err != nil {
-		fmt.Println(err.Error())
-		panic(map[string]interface{}{"err": err, "msg": errExecuteCMD})
+		log.Println(errExecuteCMD, err)
+
+		os.Exit(ExitFailure)
 	}
 }

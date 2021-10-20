@@ -2,26 +2,26 @@ package client
 
 import (
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
-func (manager *Client) CreateAndSetLocalOffer() {
-	offer, err := manager.connection.CreateOffer(nil)
+func (client *Client) CreateAndSetLocalOffer() {
+	offer, err := client.connection.CreateOffer(nil)
 	if err != nil {
-		manager.Logger.Fatal("failed to create local SDP offer", logger.Error(err))
+		client.Logger.Fatal("failed to create local SDP offer", zap.Error(err))
 	}
 
-	if err = manager.connection.SetLocalDescription(offer); err != nil {
-		manager.Logger.Fatal("failed to set local SDP offer", logger.Error(err))
+	if err = client.connection.SetLocalDescription(offer); err != nil {
+		client.Logger.Fatal("failed to set local SDP offer", zap.Error(err))
 	}
 }
 
-func (manager *Client) GetLocalDescription() *webrtc.SessionDescription {
-	return manager.connection.LocalDescription()
+func (client *Client) GetLocalDescription() *webrtc.SessionDescription {
+	return client.connection.LocalDescription()
 }
 
-func (manager *Client) SetRemoteDescription(sdp webrtc.SessionDescription) {
-	if err := manager.connection.SetRemoteDescription(sdp); err != nil {
-		manager.Logger.Fatal("failed to set remote SDP answer", logger.Error(err))
+func (client *Client) SetRemoteDescription(sdp webrtc.SessionDescription) {
+	if err := client.connection.SetRemoteDescription(sdp); err != nil {
+		client.Logger.Fatal("failed to set remote SDP answer", zap.Error(err))
 	}
 }
