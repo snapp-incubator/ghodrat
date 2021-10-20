@@ -20,17 +20,18 @@ const (
 	example = `janus --env dev --call-count 5`
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 func Command() *cobra.Command {
-	cmd := &cobra.Command{Use: use, Short: short, Long: long, Example: example, Run: run}
+	// nolint: exhaustivestruct
+	cmd := &cobra.Command{Use: use, Short: short, Long: long, Example: example, Run: run, PreRun: preRun}
 
 	envFlag := "set config environment, default is dev"
 	cmd.Flags().StringP("env", "e", "", envFlag)
 
 	return cmd
+}
+
+func preRun(cmd *cobra.Command, _ []string) {
+	rand.Seed(time.Now().UnixNano())
 }
 
 func run(cmd *cobra.Command, _ []string) {
