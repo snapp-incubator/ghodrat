@@ -8,8 +8,8 @@ import (
 
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/configs"
+	"github.com/snapp-incubator/ghodrat/internal/logger"
 	"github.com/snapp-incubator/ghodrat/internal/server/janus"
-	"github.com/snapp-incubator/ghodrat/pkg/zap"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +39,7 @@ func run(cmd *cobra.Command, _ []string) {
 
 	configs := configs.Load(env)
 
-	lg := .NewZap(configs.Logger)
+	lg := logger.NewZap(configs.Logger)
 
 	var waitGroup sync.WaitGroup
 
