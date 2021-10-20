@@ -9,7 +9,7 @@ unit-test:
 	go test ./...
 
 build:
-	go build -o ghodrat ./cmd/root.go
+	go build -o ghodrat ./cmd/ghodrat
 
 clean:
 	rm ghodrat
