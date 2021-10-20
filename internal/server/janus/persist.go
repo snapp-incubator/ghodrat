@@ -1,6 +1,7 @@
 package janus
 
 import (
+	"errors"
 	"io"
 	"time"
 
@@ -19,19 +20,23 @@ func (j *Janus) saveOpusTrack(track *webrtc.TrackRemote) {
 		// Read RTP packets being sent to Pion
 		rtp, _, err := track.ReadRTP()
 		if err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				return
 			}
+
 			j.Logger.Fatal("failed to read RTP", zap.Error(err))
 		}
+
 		switch track.Kind() {
 		case webrtc.RTPCodecTypeAudio:
 			j.audioBuilder.Push(rtp)
+
 			for {
 				sample := j.audioBuilder.Pop()
 				if sample == nil {
 					break
 				}
+
 				if j.audioWriter != nil {
 					j.audioTimestamp += sample.Duration
 					if _, err := j.audioWriter.Write(true, int64(j.audioTimestamp/time.Millisecond), sample.Data); err != nil {

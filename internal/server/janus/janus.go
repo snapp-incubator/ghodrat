@@ -2,8 +2,8 @@ package janus
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
+	"errors"
+	"io"
 	"os"
 	"time"
 
@@ -38,10 +38,9 @@ func (j *Janus) initiate() {
 
 	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
 
-	path := fmt.Sprintf("/tmp/test-%d.opus", rand.Intn(100))
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	file, err := os.CreateTemp(os.TempDir(), "ghodrat-*.opus")
 	if err != nil {
-		j.Logger.Fatal("failed to open audio file", zap.Error(err))
+		j.Logger.Fatal("failed to open audio file for writing", zap.Error(err))
 	}
 
 	ws, err := webm.NewSimpleBlockWriter(file, []webm.TrackEntry{
@@ -107,16 +106,24 @@ func (j *Janus) initiate() {
 // Before these packets are returned they are processed by interceptors. For things
 // like NACK this needs to be called.
 func (j *Janus) readRTCPPackets() {
-	rtcpBuf := make([]byte, 1500)
+	const bufferSize = 1500
+
+	rtcpBuf := make([]byte, bufferSize)
+
 	for {
 		if _, _, err := j.rtpSender.Read(rtcpBuf); err != nil {
-			j.Logger.Error("failed to close audio writer", zap.Error(err))
+			if errors.Is(err, io.EOF) {
+				return
+			}
+
+			j.Logger.Error("failed to read rtcp packets", zap.Error(err))
 		}
 	}
 }
 
 func (j *Janus) onICEConnectionStateChange(connectionState webrtc.ICEConnectionState) {
 	j.Logger.Info("connection state has changed", zap.String("state", connectionState.String()))
+
 	if connectionState == webrtc.ICEConnectionStateConnected {
 		j.iceConnectedCtxCancel()
 	}

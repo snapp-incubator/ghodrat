@@ -3,18 +3,18 @@ package janus
 import "go.uber.org/zap"
 
 func (j *Janus) TearUp(doneChannel chan bool) {
-	j.Logger.Info("Inititate janus")
+	j.Logger.Info("inititate janus")
 	j.initiate()
 
-	j.Logger.Info("read RTCP Packets")
+	j.Logger.Info("read RTCP packets")
 
 	go func() { j.readRTCPPackets() }()
 
-	j.Logger.Info("Stream Audio File")
+	j.Logger.Info("stream Audio File")
 
 	go func() { j.Client.StreamAudioFile(j.iceConnectedCtx, j.audioTrack.WriteSample, doneChannel) }()
 
-	j.Logger.Info("Create And Set Local Offer")
+	j.Logger.Info("create and set local offer")
 	j.Client.CreateAndSetLocalOffer()
 
 	j.Logger.Info("start call")
