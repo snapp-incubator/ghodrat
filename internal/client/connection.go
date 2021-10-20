@@ -44,7 +44,7 @@ func (client *Client) CreatePeerConnection() {
 	// Create a new RTCPeerConnection
 	client.connection, err = api.NewPeerConnection(config)
 	if err != nil {
-		client.Logger.Fatal("failed to close peer connection", zap.Error(err))
+		client.Logger.Fatal("failed to create peer connection", zap.Error(err))
 	}
 }
 
