@@ -1,12 +1,11 @@
 package cmd
 
 import (
+	"log"
 	"os"
 
 	"github.com/snapp-incubator/ghodrat/internal/cmd/janus"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
 
 const (
@@ -26,7 +25,7 @@ func Execute() {
 	cmd.AddCommand(janus.Command())
 
 	if err := cmd.Execute(); err != nil {
-		logger.Error("failed to execute root command", zap.Error(err))
+		log.Println(errExecuteCMD, err)
 
 		os.Exit(ExitFailure)
 	}
