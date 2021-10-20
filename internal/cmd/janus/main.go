@@ -1,15 +1,15 @@
 package janus
 
 import (
+	"fmt"
 	"math/rand"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/configs"
 	"github.com/snapp-incubator/ghodrat/internal/server/janus"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"github.com/snapp-incubator/ghodrat/pkg/zap"
 	"github.com/spf13/cobra"
 )
 
@@ -39,20 +39,21 @@ func run(cmd *cobra.Command, _ []string) {
 
 	configs := configs.Load(env)
 
-	lg := logger.NewZap(configs.Logger)
+	lg := .NewZap(configs.Logger)
 
 	var waitGroup sync.WaitGroup
+
 	waitGroup.Add(configs.CallCount)
 
 	for index := 0; index < configs.CallCount; index++ {
-		logger := lg.Named("groutine:" + strconv.Itoa(index+1))
+		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
 
 		server := janus.Janus{
 			Config: configs.Janus,
-			Logger: logger,
+			Logger: zap,
 			Client: &client.Client{
 				Config: configs.Client,
-				Logger: logger,
+				Logger: zap,
 			},
 		}
 

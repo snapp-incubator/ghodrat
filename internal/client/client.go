@@ -2,12 +2,12 @@ package client
 
 import (
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type Client struct {
 	Config *Config
-	Logger logger.Logger
+	Logger *zap.Logger
 
 	connection *webrtc.PeerConnection
 }

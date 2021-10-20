@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func (j *Janus) saveOpusTrack(track *webrtc.TrackRemote) {
 	j.Logger.Info(
 		"track has started",
-		logger.Int("payload_type", int(track.PayloadType())),
-		logger.String("mime_type", track.Codec().RTPCodecCapability.MimeType),
+		zap.Int("payload_type", int(track.PayloadType())),
+		zap.String("mime_type", track.Codec().RTPCodecCapability.MimeType),
 	)
 
 	for {
@@ -22,7 +22,7 @@ func (j *Janus) saveOpusTrack(track *webrtc.TrackRemote) {
 			if err == io.EOF {
 				return
 			}
-			j.Logger.Fatal("failed to read RTP", logger.Error(err))
+			j.Logger.Fatal("failed to read RTP", zap.Error(err))
 		}
 		switch track.Kind() {
 		case webrtc.RTPCodecTypeAudio:
@@ -35,7 +35,7 @@ func (j *Janus) saveOpusTrack(track *webrtc.TrackRemote) {
 				if j.audioWriter != nil {
 					j.audioTimestamp += sample.Duration
 					if _, err := j.audioWriter.Write(true, int64(j.audioTimestamp/time.Millisecond), sample.Data); err != nil {
-						j.Logger.Fatal("failed to write audio", logger.Error(err))
+						j.Logger.Fatal("failed to write audio", zap.Error(err))
 					}
 				}
 			}

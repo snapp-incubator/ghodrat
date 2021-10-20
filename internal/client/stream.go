@@ -10,7 +10,7 @@ import (
 	"github.com/pion/webrtc/v3"
 	"github.com/pion/webrtc/v3/pkg/media"
 	"github.com/pion/webrtc/v3/pkg/media/oggreader"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func (client *Client) StreamAudioFile(
@@ -21,18 +21,18 @@ func (client *Client) StreamAudioFile(
 
 	_, err := os.Stat(audioFileAddress)
 	if os.IsNotExist(err) {
-		client.Logger.Fatal("audio file does not exist", logger.String("path", audioFileAddress))
+		client.Logger.Fatal("audio file does not exist", zap.String("path", audioFileAddress))
 	}
 
 	file, err := os.Open(audioFileAddress)
 	if err != nil {
-		client.Logger.Fatal("failed to open audio file", logger.Error(err))
+		client.Logger.Fatal("failed to open audio file", zap.Error(err))
 	}
 
 	// Open on oggfile in non-checksum mode.
 	ogg, _, err := oggreader.NewWith(file)
 	if err != nil {
-		client.Logger.Fatal("failed to read ogg audio", logger.Error(err))
+		client.Logger.Fatal("failed to read ogg audio", zap.Error(err))
 	}
 
 	// Wait for connection established
@@ -50,7 +50,7 @@ func (client *Client) StreamAudioFile(
 				return
 			}
 
-			client.Logger.Fatal("failed to parse ogg", logger.Error(err))
+			client.Logger.Fatal("failed to parse ogg", zap.Error(err))
 		}
 
 		// The amount of samples is the difference between the last and current timestamp
@@ -62,7 +62,7 @@ func (client *Client) StreamAudioFile(
 		sample := media.Sample{Data: pageData, Duration: sampleDuration}
 
 		if err = trackWriter(sample); err != nil {
-			client.Logger.Fatal("failed to write media sample", logger.Error(err))
+			client.Logger.Fatal("failed to write media sample", zap.Error(err))
 		}
 
 		time.Sleep(sampleDuration)
@@ -82,7 +82,7 @@ func (client *Client) OnTrack(callback func(*webrtc.TrackRemote)) {
 func (client *Client) AddTrack(track *webrtc.TrackLocalStaticSample) *webrtc.RTPSender {
 	rtpSender, err := client.connection.AddTrack(track)
 	if err != nil {
-		client.Logger.Fatal("failed to create RTP sender", logger.Error(err))
+		client.Logger.Fatal("failed to create RTP sender", zap.Error(err))
 	}
 
 	return rtpSender

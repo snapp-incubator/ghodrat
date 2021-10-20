@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // InitiatePeerConnection returns webrtc-peer-connection with opus media-engine.
@@ -26,7 +26,7 @@ func (client *Client) CreatePeerConnection() {
 
 	// Add OPUS codec (audio format)
 	if err = mediaEngine.RegisterCodec(codec, webrtc.RTPCodecTypeAudio); err != nil {
-		client.Logger.Fatal("failed to register opus codec", logger.Error(err))
+		client.Logger.Fatal("failed to register opus codec", zap.Error(err))
 	}
 
 	// Create the API object with the MediaEngine
@@ -44,7 +44,7 @@ func (client *Client) CreatePeerConnection() {
 	// Create a new RTCPeerConnection
 	client.connection, err = api.NewPeerConnection(config)
 	if err != nil {
-		client.Logger.Fatal("failed to close peer connection", logger.Error(err))
+		client.Logger.Fatal("failed to close peer connection", zap.Error(err))
 	}
 }
 
@@ -55,6 +55,6 @@ func (client *Client) OnICEConnectionStateChange(callback func(webrtc.ICEConnect
 // NewPeerConnection returns webrtc-peer-connection with opus media-engine.
 func (client *Client) ClosePeerConnection() {
 	if err := client.connection.Close(); err != nil {
-		client.Logger.Fatal("failed to close peer connection", logger.Error(err))
+		client.Logger.Fatal("failed to close peer connection", zap.Error(err))
 	}
 }

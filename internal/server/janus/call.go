@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func (j *Janus) call() error {
@@ -17,7 +17,7 @@ func (j *Janus) call() error {
 
 	roomID := create.PluginData.Data["room"].(float64)
 
-	j.Logger.Info("room created", logger.Float64("room", roomID))
+	j.Logger.Info("room created", zap.Float64("room", roomID))
 
 	join, err := j.audioBridgeHandle.Message(map[string]interface{}{
 		"request": "join",
@@ -27,8 +27,8 @@ func (j *Janus) call() error {
 		return fmt.Errorf("failed to join room: %w", err)
 	}
 
-	j.Logger.Info("joined to room", logger.Float64("id", join.Plugindata.Data["id"].(float64)),
-		logger.Any("participants", join.Plugindata.Data["participants"]))
+	j.Logger.Info("joined to room", zap.Float64("id", join.Plugindata.Data["id"].(float64)),
+		zap.Any("participants", join.Plugindata.Data["participants"]))
 
 	configure, err := j.audioBridgeHandle.Message(map[string]interface{}{
 		"request": "configure",
