@@ -16,6 +16,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.1
 	go.opentelemetry.io/otel/trace v1.0.1
 	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
@@ -23,6 +24,7 @@ require (
 )
 
 require (
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -47,7 +49,6 @@ require (
 	github.com/pion/udp v0.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	go.uber.org/automaxprocs v1.4.0 // indirect
 	golang.org/x/net v0.0.0-20211019232329-c6ed85c7a12d // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

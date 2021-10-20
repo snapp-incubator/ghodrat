@@ -11,5 +11,8 @@ unit-test:
 build:
 	go build -o ghodrat ./cmd/ghodrat
 
+update:
+	go get -u ./cmd/ghodrat
+
 clean:
 	rm ghodrat
