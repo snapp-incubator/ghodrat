@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-.PHONY: lint unit-test build clean
+.PHONY: lint unit-test build clean update
 
 lint:
 	golangci-lint run --enable-all
