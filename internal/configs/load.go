@@ -6,8 +6,8 @@ import (
 	"github.com/snapp-incubator/ghodrat/internal"
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/server/janus"
+	"github.com/snapp-incubator/ghodrat/internal/tracer"
 	"github.com/snapp-incubator/ghodrat/pkg/logger"
-	"github.com/snapp-incubator/ghodrat/pkg/tracer"
 	"github.com/snapp-incubator/ghodrat/pkg/utils"
 )
 
