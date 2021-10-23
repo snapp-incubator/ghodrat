@@ -5,8 +5,13 @@
 ## Deployment
 
 ```zsh
-kubectl create -f ./deployments/k8s/janus/configmap.yml
-kubectl create -f ./deployments/k8s/janus/job.yml
+# update or create manifests
+kubectl apply -f ./deployments/k8s/janus/configmap.yml
+kubectl apply -f ./deployments/k8s/janus/job.yml
+
+# delete manifests
+kubectl delete -f ./deployments/k8s/janus/configmap.yml
+kubectl delete -f ./deployments/k8s/janus/job.yml
 ```
 
 ### troubleshooting image
