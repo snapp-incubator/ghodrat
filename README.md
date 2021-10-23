@@ -2,17 +2,38 @@
 
 > WebRTC media servers stress testing tool (currently only Janus)
 
+## Architecture
+
+<p align="center">
+  <img src="assets/architecture.png" />
+</p>
+
+## Janus media-server under load
+
+<p align="center">
+  <img src="assets/statistics.png" />
+</p>
+
 ## Deployment
 
-```zsh
-# update or create manifests
-kubectl apply -f ./deployments/k8s/janus/configmap.yml
-kubectl apply -f ./deployments/k8s/janus/job.yml
+- ghodrat
 
-# delete manifests
-kubectl delete -f ./deployments/k8s/janus/configmap.yml
-kubectl delete -f ./deployments/k8s/janus/job.yml
-```
+    ``` zsh
+    # update or create manifests
+    kubectl apply -f ./deployments/ghodrat/k8s/janus/configmap.yml
+    kubectl apply -f ./deployments/ghodrat/k8s/janus/job.yml
+
+    # delete manifests
+    kubectl delete -f ./deployments/ghodrat/k8s/janus/configmap.yml
+    kubectl delete -f ./deployments/ghodrat/k8s/janus/job.yml
+    ```
+
+- 3p-janus
+
+    ``` zsh
+    helm upgrade --install janus ./deployments/third-parties/janus
+    helm uninstall janus
+    ```
 
 ### troubleshooting image
 
