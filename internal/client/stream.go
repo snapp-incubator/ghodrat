@@ -3,8 +3,10 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/pion/webrtc/v3"
@@ -21,6 +23,15 @@ func (client *Client) StreamAudioFile(
 
 	_, err := os.Stat(audioFileAddress)
 	if os.IsNotExist(err) {
+		out, err := exec.Command("ls").Output()
+		if err != nil {
+			fmt.Printf("%s", err)
+		}
+
+		client.Logger.Info("Command Successfully Executed")
+		output := string(out[:])
+		client.Logger.Info(output)
+
 		client.Logger.Fatal("audio file does not exist", zap.String("path", audioFileAddress))
 	}
 
