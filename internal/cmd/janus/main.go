@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	zap2 "go.uber.org/zap"
+
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/config"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
@@ -43,12 +45,18 @@ func run(cmd *cobra.Command, _ []string) {
 	for index := 0; index < configs.CallCount; index++ {
 		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
 
+		af, err := client.NewAudioFactory(configs.Client)
+		if err != nil {
+			zap.Panic("failed to create audio factory", zap2.Error(err))
+		}
+
 		server := janus.Janus{
 			Config: configs.Janus,
 			Logger: zap,
 			Client: &client.Client{
-				Config: configs.Client,
-				Logger: zap,
+				Config:       configs.Client,
+				Logger:       zap,
+				AudioFactory: af,
 			},
 		}
 

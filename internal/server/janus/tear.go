@@ -26,8 +26,5 @@ func (j *Janus) TearUp(doneChannel chan bool) {
 
 func (j *Janus) TearDown() {
 	j.Client.ClosePeerConnection()
-
-	if err := j.audioWriter.Close(); err != nil {
-		j.Logger.Fatal("failed to close audio writer", zap.Error(err))
-	}
+	j.Client.CloseOpusTrack()
 }

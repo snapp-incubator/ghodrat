@@ -4,6 +4,8 @@ import (
 	"log"
 	"strings"
 
+	"github.com/snapp-incubator/ghodrat/internal/server/ion"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
@@ -26,6 +28,7 @@ type Config struct {
 	CallCount int            `koanf:"call-count"`
 	Client    *client.Config `koanf:"client"`
 	Janus     *janus.Config  `koanf:"janus"`
+	Ion       *ion.Config    `koanf:"ion"`
 }
 
 // New reads configuration with viper.
