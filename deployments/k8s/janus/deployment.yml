@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: ghodrat-janus
-          image: ghcr.io/snapp-incubator/ghodrat-janus:develop
+          image: ghcr.io/snapp-incubator/ghodrat-janus:master
           imagePullPolicy: Always
           ports:
             - name: http

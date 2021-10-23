@@ -53,17 +53,6 @@ jobs:
       - name: Checks out our project source code
         uses: actions/checkout@v2
 
-      - name: Generate Dockerfile
-        run: |
-          render() {
-            sedStr="s!%%COMMAND%%!$command!g;"
-            sed -r "$sedStr" $1
-          }
-
-          command=${{ matrix.command }}
-          buildDirectory="./build"
-          render $buildDirectory/template.Dockerfile > $buildDirectory/$command.Dockerfile
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -85,6 +74,16 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+
+      - name: Generate Dockerfile
+        run: |
+          render() {
+            sedStr="s!%%COMMAND%%!$command!g;"
+            sed -r "$sedStr" $1
+          }
+
+          command=${{ matrix.command }}
+          render build/template.Dockerfile > build/$command.Dockerfile
 
       - uses: docker/build-push-action@v2
         with:

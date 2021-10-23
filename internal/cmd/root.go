@@ -26,7 +26,6 @@ func Execute() {
 
 	if err := cmd.Execute(); err != nil {
 		log.Println(errExecuteCMD, err)
-
 		os.Exit(ExitFailure)
 	}
 }
