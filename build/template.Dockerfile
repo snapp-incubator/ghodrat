@@ -21,4 +21,4 @@ LABEL org.opencontainers.image.source="https://github.com/snapp-incubator/ghodra
 
 ENTRYPOINT ["/bin/ghodrat/app"]
 
-CMD ["%%COMMAND%%", "--env=prod"]
+CMD ["%%COMMAND%%"]
