@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "janus.fullname" . }}
+  labels:
+    {{- include "janus.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "janus.fullname" . }}
+  replicas: {{ .Values.replicaCount  }}
+  selector:
+    matchLabels:
+      {{- include "janus.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "janus.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-8188
+              containerPort: 8188
+              protocol: TCP
+
+            - name: tcp-8088
+              containerPort: 8088
+              protocol: TCP
+
+            - name: tcp-8089
+              containerPort: 8089
+              protocol: TCP
+
+            - name: tcp-8889
+              containerPort: 8889
+              protocol: TCP
+
+            - name: tcp-8000
+              containerPort: 8000
+              protocol: TCP
+
+            - name: tcp-7088
+              containerPort: 7088
+              protocol: TCP
+
+            - name: tcp-7089
+              containerPort: 7089
+              protocol: TCP
+
+            {{- range untilStep (.Values.ports.min|int) (.Values.ports.max|int) 1 }}
+            - name: "{{ . }}-udp"
+              containerPort: {{ . }}
+              protocol: UDP
+           {{- end }}
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          volumeMounts:
+            - name: {{ include "janus.fullname" . }}-config
+              mountPath: /usr/local/etc/janus/
+
+      volumes:
+        - name: {{ include "janus.fullname" . }}-config
+          configMap:
+            name: {{ include "janus.fullname" . }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "janus.fullname" . }}
+  labels:
+    {{- include "janus.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: tcp-8188
+      targetPort: tcp-8188
+      port: 8188
+      protocol: TCP
+    
+    - name: tcp-8088
+      targetPort: tcp-8088
+      port: 8088
+      protocol: TCP
+    
+    - name: tcp-8089
+      targetPort: tcp-8089
+      port: 8089
+      protocol: TCP
+
+    - name: tcp-8889
+      targetPort: tcp-8889
+      port: 8889
+      protocol: TCP
+
+    - name: tcp-8000
+      targetPort: tcp-8000
+      port: 8000
+      protocol: TCP
+
+    - name: tcp-7088
+      targetPort: tcp-7088
+      port: 7088
+      protocol: TCP
+    
+    - name: tcp-7089
+      targetPort: tcp-7089
+      port: 7089
+      protocol: TCP
+
+    {{- range untilStep (.Values.ports.min|int) (.Values.ports.max|int) 1 }}
+    - name: "{{ . }}-udp"
+      targetPort: udp-{{ . }}
+      port: {{ . }}
+      protocol: UDP
+    {{- end }}
+
+  selector:
+    {{- include "janus.selectorLabels" . | nindent 4 }}
