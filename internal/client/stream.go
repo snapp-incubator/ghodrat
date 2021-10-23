@@ -23,14 +23,24 @@ func (client *Client) StreamAudioFile(
 
 	_, err := os.Stat(audioFileAddress)
 	if os.IsNotExist(err) {
-		out, err := exec.Command("ls").Output()
+
+		out, err := exec.Command("pwd").Output()
 		if err != nil {
 			fmt.Printf("%s", err)
 		}
+		client.Logger.Info("Command pwd", zap.String("res", string(out[:])))
 
-		client.Logger.Info("Command Successfully Executed")
-		output := string(out[:])
-		client.Logger.Info(output)
+		out, err = exec.Command("ls", "-lah").Output()
+		if err != nil {
+			fmt.Printf("%s", err)
+		}
+		client.Logger.Info("Command ls", zap.String("res", string(out[:])))
+
+		out, err = exec.Command("ls", "/bin/ghodrat").Output()
+		if err != nil {
+			fmt.Printf("%s", err)
+		}
+		client.Logger.Info("Command ls /bin/ghodrat", zap.String("res", string(out[:])))
 
 		client.Logger.Fatal("audio file does not exist", zap.String("path", audioFileAddress))
 	}
