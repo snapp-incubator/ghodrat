@@ -14,7 +14,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: ghodrat-janus
-          image: ghcr.io/snapp-incubator/ghodrat-janus:v1.1.0
+          image: ghcr.io/snapp-incubator/ghodrat-janus:main
           imagePullPolicy: Always
           ports:
             - name: http
