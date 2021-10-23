@@ -11,7 +11,7 @@ data:
   ghodrat_logger_level: "info"
 
   tracer_enabled: "false"
-  tracer_host: "localhost"
+  tracer_host: ""
   tracer_port: "6831"
   tracer_sample-rate: "0.1"
 
@@ -23,6 +23,6 @@ data:
   client_connection_rtp-codec_channels: "2"
   client_connection_rtp-codec_payload-type: "111"
 
-  janus_address: "janus"
+  janus_address: "janus-1631071812"
   janus_max-late: "10"
   janus_sample-rate: "48000"

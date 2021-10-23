@@ -1,20 +1,17 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: ghodrat-janus
   labels:
     app.kubernetes.io/name: ghodrat-janus
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: ghodrat-janus
   template:
     metadata:
       labels:
         app.kubernetes.io/name: ghodrat-janus
     spec:
+      restartPolicy: OnFailure
       containers:
         - name: ghodrat-janus
           image: ghcr.io/snapp-incubator/ghodrat-janus:main

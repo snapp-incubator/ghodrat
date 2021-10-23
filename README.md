@@ -6,7 +6,7 @@
 
 ```zsh
 kubectl create -f ./deployments/k8s/janus/configmap.yml
-kubectl create -f ./deployments/k8s/janus/deployment.yml
+kubectl create -f ./deployments/k8s/janus/job.yml
 ```
 
 ### troubleshooting image
