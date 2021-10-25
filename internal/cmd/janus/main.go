@@ -14,15 +14,13 @@ import (
 )
 
 const (
-	use     = `janus`
-	short   = `janus WebRTC stress testing tool`
-	long    = `janus  is a CMD tool used to stress test janus WebRTC media servers`
-	example = `janus`
+	use   = `janus`
+	short = `janus WebRTC media-server stress testing tool`
 )
 
 func Command() *cobra.Command {
 	// nolint: exhaustivestruct
-	cmd := &cobra.Command{Use: use, Short: short, Long: long, Example: example, Run: run, PreRun: preRun}
+	cmd := &cobra.Command{Use: use, Short: short, Run: run, PreRun: preRun}
 
 	return cmd
 }
@@ -31,7 +29,7 @@ func preRun(cmd *cobra.Command, _ []string) {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func run(cmd *cobra.Command, _ []string) {
+func run(_ *cobra.Command, _ []string) {
 	configs := config.New()
 
 	lg := logger.NewZap(configs.Logger)

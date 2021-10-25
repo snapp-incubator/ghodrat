@@ -1,0 +1,23 @@
+---
+version: "3"
+services:
+  ghodrat:
+    image: ghcr.io/snapp-incubator/ghodrat-ion-sfu:main
+    environment:
+      logger_development: "false"
+      logger_encoding: "json"
+      logger_level: "warn"
+
+      tracer_enabled: "false"
+      tracer_host: "localhost"
+      tracer_port: "6831"
+      tracer_sample-rate: "0.1"
+
+  ion-sfu:
+    image: pionwebrtc/ion-sfu:latest-grpc
+    ports:
+      - "7000:7000"
+      - "5000-5200:5000-5200/udp"
+    volumes:
+      - "./ion-sfu-config.toml:/configs/sfu.toml"
+    restart: always
