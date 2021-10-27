@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: "ghodrat-janus"
 data:
-  ghodrat_call-count: "100"
+  ghodrat_call-count: "1"
 
   ghodrat_logger_development: "false"
   ghodrat_logger_encoding: "json"

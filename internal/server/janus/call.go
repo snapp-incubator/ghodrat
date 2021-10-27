@@ -19,10 +19,8 @@ func (j *Janus) call() error {
 
 	j.Logger.Info("room created", zap.Float64("room", roomID))
 
-	join, err := j.audioBridgeHandle.Message(map[string]interface{}{
-		"request": "join",
-		"room":    roomID,
-	}, nil)
+	body := map[string]interface{}{"request": "join", "room": roomID}
+	join, err := j.audioBridgeHandle.Message(body, nil)
 	if err != nil {
 		return fmt.Errorf("failed to join room: %w", err)
 	}
@@ -30,17 +28,15 @@ func (j *Janus) call() error {
 	j.Logger.Info("joined to room", zap.Float64("id", join.Plugindata.Data["id"].(float64)),
 		zap.Any("participants", join.Plugindata.Data["participants"]))
 
-	configure, err := j.audioBridgeHandle.Message(map[string]interface{}{
-		"request": "configure",
-	}, map[string]interface{}{
-		"type": "offer",
-		"sdp":  j.Client.GetLocalDescription().SDP,
-	})
+	body = map[string]interface{}{"request": "configure"}
+	jsep := map[string]interface{}{"type": "offer",
+		"sdp": j.Client.GetLocalDescription().SDP}
+	configure, err := j.audioBridgeHandle.Message(body, jsep)
 	if err != nil {
 		return fmt.Errorf("failed to send offer: %w", err)
 	}
 
-	j.Logger.Info("offer has been sent")
+	j.Logger.Info("offer has been sent", zap.Any("sdp", jsep))
 
 	if configure.Jsep != nil {
 		j.Client.SetRemoteDescription(webrtc.SessionDescription{

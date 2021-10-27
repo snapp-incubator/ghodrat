@@ -19,5 +19,5 @@ services:
       - "7000:7000"
       - "5000-5200:5000-5200/udp"
     volumes:
-      - "./ion-sfu-config.toml:/configs/sfu.toml"
+      - "./pion-config.toml:/configs/sfu.toml"
     restart: always
