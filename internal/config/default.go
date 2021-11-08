@@ -13,7 +13,7 @@ func Default() Config {
 		Logger: &logger.Config{
 			Development: true,
 			Encoding:    "console",
-			Level:       "warn",
+			Level:       "info",
 		},
 		Tracer: &tracer.Config{
 			Enabled:    false,
@@ -36,7 +36,8 @@ func Default() Config {
 		},
 
 		Janus: &janus.Config{
-			Address:    "ws://localhost:8080",
+			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
+			// http://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io
 			MaxLate:    10,
 			SampleRate: 48000,
 		},

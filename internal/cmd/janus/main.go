@@ -35,7 +35,6 @@ func run(_ *cobra.Command, _ []string) {
 	lg := logger.NewZap(configs.Logger)
 
 	var waitGroup sync.WaitGroup
-
 	waitGroup.Add(configs.CallCount)
 
 	for index := 0; index < configs.CallCount; index++ {

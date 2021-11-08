@@ -1,10 +1,11 @@
 package janus
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+)
 
 func (j *Janus) TearUp(doneChannel chan bool) {
 	j.initiate()
-
 	go func() { j.readRTCPPackets() }()
 
 	go func() { j.Client.StreamAudioFile(j.iceConnectedCtx, j.audioTrack.WriteSample, doneChannel) }()
