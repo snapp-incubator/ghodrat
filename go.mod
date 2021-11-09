@@ -22,10 +22,8 @@ require (
 )
 
 require (
-	github.com/at-wat/ebml-go v0.16.0
 	github.com/google/uuid v1.3.0
 	github.com/pion/ion-sdk-go v0.6.0
-	github.com/pion/rtp v1.7.2
 )
 
 require (
@@ -54,6 +52,7 @@ require (
 	github.com/pion/mdns v0.0.5 // indirect
 	github.com/pion/randutil v0.1.0 // indirect
 	github.com/pion/rtcp v1.2.8 // indirect
+	github.com/pion/rtp v1.7.2 // indirect
 	github.com/pion/sctp v1.7.12 // indirect
 	github.com/pion/sdp/v3 v3.0.4 // indirect
 	github.com/pion/srtp/v2 v2.0.5 // indirect

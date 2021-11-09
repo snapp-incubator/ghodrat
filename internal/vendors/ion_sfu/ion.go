@@ -1,4 +1,4 @@
-package ion_server
+package ion_sfu
 
 import (
 	"math/rand"
