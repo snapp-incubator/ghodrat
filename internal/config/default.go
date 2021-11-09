@@ -25,6 +25,8 @@ func Default() Config {
 
 		Client: &client.Config{
 			AudioFileAddress: "./static/audio.ogg",
+			AudioMaxLate:     10,
+			AudioSampleRate:  48000,
 			Connection: client.Connection{
 				STUNServer: "stun:stun.l.google.com:19302",
 				RTPCodec: client.RTPCodec{
@@ -36,8 +38,7 @@ func Default() Config {
 		},
 
 		Janus: &janus.Config{
-			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
-			// http://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io
+			Address: "ws://localhost:8080",
 			MaxLate:    10,
 			SampleRate: 48000,
 		},

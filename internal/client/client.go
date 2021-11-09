@@ -9,5 +9,7 @@ type Client struct {
 	Config *Config
 	Logger *zap.Logger
 
+	AudioFactory *AudioFactory
+
 	connection *webrtc.PeerConnection
 }
