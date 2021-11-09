@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch application",
+            "type": "go",
+            "request": "launch",
+            "program": "cmd/ghodrat",
+            "args": [
+                "janus",
+            ]
+        }
+    ]
+}

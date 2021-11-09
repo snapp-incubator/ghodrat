@@ -3,6 +3,7 @@ package janus
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/at-wat/ebml-go/webm"
 	"github.com/notedit/janus-go"
@@ -19,10 +20,13 @@ type Janus struct {
 	Config *Config
 
 	audioBridgeHandle *janus.Handle
+	audioWriter       webm.BlockWriteCloser
+	audioBuilder      *samplebuilder.SampleBuilder
+	audioTimestamp    time.Duration
 }
 
 func (j *Janus) initiate() {
-	audioBuilder := samplebuilder.New(10, &codecs.OpusPacket{}, 48000)
+	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
 
 	file, err := os.CreateTemp(os.TempDir(), "ghodrat-*.opus")
 	if err != nil {
@@ -48,9 +52,9 @@ func (j *Janus) initiate() {
 		j.Logger.Fatal("failed to create block write", zap.Error(err))
 	}
 
-	// j.audioWriter = ws[0]
-	_ = audioBuilder
-	_ = ws
+	j.audioWriter = ws[0]
+
+	// j.Client.OnTrack(j.saveOpusTrack)
 
 	gateway, err := janus.Connect(j.Config.Address)
 	if err != nil {
@@ -118,6 +122,8 @@ func (j *Janus) call() error {
 	if err != nil {
 		j.Logger.Fatal("failed to send offer", zap.Error(err))
 	}
+
+	j.Logger.Info("local description", zap.Any("sdp", jsep))
 
 	if configure.Jsep == nil {
 		j.Logger.Fatal("Jsep should not be nil")
