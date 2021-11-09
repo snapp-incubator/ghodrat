@@ -20,12 +20,12 @@
 
     ``` zsh
     # update or create manifests
-    kubectl apply -f ./deployments/ghodrat/k8s/janus/configmap.yml
-    kubectl apply -f ./deployments/ghodrat/k8s/janus/job.yml
+    kubectl apply -f ./deployments/k8s/janus/configmap.yml
+    kubectl apply -f ./deployments/k8s/janus/job.yml
 
     # delete manifests
-    kubectl delete -f ./deployments/ghodrat/k8s/janus/configmap.yml
-    kubectl delete -f ./deployments/ghodrat/k8s/janus/job.yml
+    kubectl delete -f ./deployments/k8s/janus/configmap.yml
+    kubectl delete -f ./deployments/k8s/janus/job.yml
     ```
 
 - 3p-janus

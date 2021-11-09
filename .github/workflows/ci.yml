@@ -39,7 +39,7 @@ jobs:
       - test
     strategy:
       matrix:
-        command: [janus, jitsi]
+        command: [janus, ion-sfu]
     env:
       REGISTRY: ghcr.io
       USERNAME: ${{ github.repository_owner }}

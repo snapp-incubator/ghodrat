@@ -13,7 +13,7 @@ func Default() Config {
 		Logger: &logger.Config{
 			Development: true,
 			Encoding:    "console",
-			Level:       "warn",
+			Level:       "info",
 		},
 		Tracer: &tracer.Config{
 			Enabled:    false,
@@ -39,6 +39,8 @@ func Default() Config {
 
 		Janus: &janus.Config{
 			Address: "ws://localhost:8080",
+			MaxLate:    10,
+			SampleRate: 48000,
 		},
 	}
 }

@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "ghodrat-janus"
+  labels:
+    app.kubernetes.io/name: "ghodrat-janus"
+data:
+  ghodrat_call-count: "1"
+
+  ghodrat_logger_development: "false"
+  ghodrat_logger_encoding: "json"
+  ghodrat_logger_level: "info"
+
+  ghodrat_tracer_enabled: "false"
+  ghodrat_tracer_host: ""
+  ghodrat_tracer_port: "6831"
+  ghodrat_tracer_sample-rate: "0.1"
+
+  ghodrat_client_audio-file-address: "bin/ghodrat/audio.ogg"
+  ghodrat_client_connection_stun-servers: "stun:stun.l.google.com:19302"
+  ghodrat_client_connection_rtp-codec_clock-rate: "48000"
+  ghodrat_client_connection_rtp-codec_channels: "2"
+  ghodrat_client_connection_rtp-codec_payload-type: "111"
+
+  ghodrat_janus_address: "ws://janus:8188"
+  ghodrat_janus_max-late: "10"
+  ghodrat_janus_sample-rate: "48000"
