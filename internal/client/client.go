@@ -13,12 +13,9 @@ type Client struct {
 }
 
 type Config struct {
-	AudioFileAddress string `koanf:"audio-file-address"`
-	AudioMaxLate     uint16 `koanf:"audio-max-late"`
-	AudioSampleRate  uint32 `koanf:"sample-rate"`
-
-	STUNServer string    `koanf:"stun-server"`
-	RTPCodec   *RTPCodec `koanf:"rtp-codec"`
+	TrackAddress string    `koanf:"track-address"`
+	STUNServer   string    `koanf:"stun-server"`
+	RTPCodec     *RTPCodec `koanf:"rtp-codec"`
 }
 
 type RTPCodec struct {

@@ -14,7 +14,7 @@ func (j *Janus) StartCall(doneChannel chan bool) {
 	j.initiate()
 	go j.handle()
 
-	j.Client.AddTrack(doneChannel, iceConnectedCtx)
+	j.Client.ReadTrack(doneChannel, iceConnectedCtx)
 
 	j.Client.CreateAndSetLocalOffer()
 

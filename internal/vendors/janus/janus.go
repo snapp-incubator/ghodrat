@@ -2,9 +2,13 @@ package janus
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/at-wat/ebml-go/webm"
 	"github.com/notedit/janus-go"
+	"github.com/pion/rtp/codecs"
 	"github.com/pion/webrtc/v3"
+	"github.com/pion/webrtc/v3/pkg/media/samplebuilder"
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"go.uber.org/zap"
 )
@@ -18,6 +22,36 @@ type Janus struct {
 }
 
 func (j *Janus) initiate() {
+	audioBuilder := samplebuilder.New(10, &codecs.OpusPacket{}, 48000)
+
+	file, err := os.CreateTemp(os.TempDir(), "ghodrat-*.opus")
+	if err != nil {
+		j.Logger.Fatal("failed to open audio file for writing", zap.Error(err))
+	}
+
+	ws, err := webm.NewSimpleBlockWriter(file, []webm.TrackEntry{
+		{
+			Name:            "Audio",
+			TrackNumber:     1,
+			TrackUID:        12345,
+			CodecID:         "A_OPUS",
+			TrackType:       2,
+			DefaultDuration: 20000000,
+			Audio: &webm.Audio{
+				SamplingFrequency: 48000.0,
+				Channels:          2,
+			},
+		},
+	})
+
+	if err != nil {
+		j.Logger.Fatal("failed to create block write", zap.Error(err))
+	}
+
+	// j.audioWriter = ws[0]
+	_ = audioBuilder
+	_ = ws
+
 	gateway, err := janus.Connect(j.Config.Address)
 	if err != nil {
 		j.Logger.Fatal("failed to connect to janus", zap.Error(err))
@@ -67,28 +101,36 @@ func (j *Janus) call() error {
 	body := map[string]interface{}{"request": "join", "room": roomID}
 	join, err := j.audioBridgeHandle.Message(body, nil)
 	if err != nil {
-		return fmt.Errorf("failed to join room: %w", err)
+		j.Logger.Fatal("failed to join room", zap.Error(err))
 	}
 
-	j.Logger.Info("joined to room", zap.Float64("id", join.Plugindata.Data["id"].(float64)),
-		zap.Any("participants", join.Plugindata.Data["participants"]))
+	j.Logger.Info("joined to room", zap.Float64(
+		"id", join.Plugindata.Data["id"].(float64)),
+		zap.Any("participants", join.Plugindata.Data["participants"]),
+	)
 
 	body = map[string]interface{}{"request": "configure"}
-	jsep := map[string]interface{}{
-		"sdp":  j.Client.GetLocalDescription().SDP,
-		"type": "offer",
+	jsep := map[string]interface{}{"type": "offer",
+		"sdp": j.Client.GetLocalDescription().SDP,
 	}
 
 	configure, err := j.audioBridgeHandle.Message(body, jsep)
 	if err != nil {
-		return fmt.Errorf("failed to send offer: %w", err)
+		j.Logger.Fatal("failed to send offer", zap.Error(err))
+	}
+
+	if configure.Jsep == nil {
+		j.Logger.Fatal("Jsep should not be nil")
 	}
 
 	if configure.Jsep != nil {
-		j.Client.SetRemoteDescription(webrtc.SessionDescription{
-			Type: webrtc.SDPTypeAnswer,
-			SDP:  configure.Jsep["sdp"].(string),
-		})
+		remoteSDP, ok := configure.Jsep["sdp"].(string)
+		if !ok {
+			j.Logger.Fatal("Jsep should contain SDP")
+		}
+
+		description := webrtc.SessionDescription{Type: webrtc.SDPTypeAnswer, SDP: remoteSDP}
+		j.Client.SetRemoteDescription(description)
 	}
 
 	return nil

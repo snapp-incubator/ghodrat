@@ -3,10 +3,8 @@ module github.com/snapp-incubator/ghodrat
 go 1.17
 
 require (
-	github.com/at-wat/ebml-go v0.16.0
 	github.com/knadh/koanf v1.3.0
 	github.com/notedit/janus-go v0.0.0-20210115013133-fdce1b146d0e
-	github.com/pion/rtp v1.7.2
 	github.com/pion/webrtc/v3 v3.1.5
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/spf13/cobra v1.2.1
@@ -24,8 +22,10 @@ require (
 )
 
 require (
+	github.com/at-wat/ebml-go v0.16.0
 	github.com/google/uuid v1.3.0
 	github.com/pion/ion-sdk-go v0.6.0
+	github.com/pion/rtp v1.7.2
 )
 
 require (

@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/pion/webrtc/v3"
@@ -20,8 +21,8 @@ var (
 	videoTrackCodecId         = "video"
 )
 
-func (client *Client) AddTrack(doneChannel chan bool, connectedCtx context.Context) {
-	_, err := os.Stat(client.Config.AudioFileAddress)
+func (client *Client) ReadTrack(doneChannel chan bool, connectedCtx context.Context) {
+	_, err := os.Stat(client.Config.TrackAddress)
 	if os.IsNotExist(err) {
 		panic("Track Not Exists")
 	}
@@ -29,7 +30,10 @@ func (client *Client) AddTrack(doneChannel chan bool, connectedCtx context.Conte
 	var trackCodecCapability webrtc.RTPCodecCapability
 	var trackCodecId string
 
-	if true {
+	mimeType := client.Config.RTPCodec.MimeType
+	isAudioTrack := strings.Split(mimeType, "/")[0] == "audio"
+
+	if isAudioTrack {
 		trackCodecCapability = audioTrackCodecCapability
 		trackCodecId = audioTrackCodecId
 	} else {
@@ -49,10 +53,10 @@ func (client *Client) AddTrack(doneChannel chan bool, connectedCtx context.Conte
 
 	go readRTCP(rtpSender)
 
-	if true {
-		go audioTrack(client.Config.AudioFileAddress, doneChannel, track, connectedCtx)
+	if isAudioTrack {
+		go audioTrack(client.Config.TrackAddress, doneChannel, track, connectedCtx)
 	} else {
-		go videoTrack(client.Config.AudioFileAddress, doneChannel, track, connectedCtx)
+		go videoTrack(client.Config.TrackAddress, doneChannel, track, connectedCtx)
 	}
 }
 

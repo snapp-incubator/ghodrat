@@ -26,7 +26,6 @@ func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelF
 		PayloadType: webrtc.PayloadType(client.Config.RTPCodec.PayloadType),
 	}
 
-	// Add OPUS codec (audio format)
 	rtpCodecType := webrtc.RTPCodecType(client.Config.RTPCodec.CodecType)
 	if err = mediaEngine.RegisterCodec(codec, rtpCodecType); err != nil {
 		client.Logger.Fatal("failed to register opus codec", zap.Error(err))

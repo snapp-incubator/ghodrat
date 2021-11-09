@@ -22,25 +22,33 @@ func Default() Config {
 			SampleRate: 0.1,
 		},
 		CallCount: 1,
-
 		Client: &client.Config{
-			AudioFileAddress: "./static/audio.ogg",
-			AudioMaxLate:     10,
-			AudioSampleRate:  48000,
-			STUNServer:       "stun:stun.l.google.com:19302",
+			STUNServer: "stun:stun.l.google.com:19302",
+
+			// OPUS audio (ogg)
+			TrackAddress: "./static/audio.ogg",
 			RTPCodec: &client.RTPCodec{
-				MimeType:    "",
-				ClockRate:   2,
-				Channels:    2,
-				PayloadType: 1,
+				MimeType:    "audio/opus",
+				ClockRate:   48000,
+				Channels:    0,
+				PayloadType: 111,
 				CodecType:   1,
 			},
-		},
 
+			// VP8 video (ivf)
+			// TrackAddress:    "./static/video.ivf",
+			// RTPCodec: &client.RTPCodec{
+			// 	MimeType:    "video/vp8",
+			// 	ClockRate:   90000,
+			// 	Channels:    0,
+			// 	PayloadType: 96,
+			// 	CodecType:   2,
+			// },
+		},
 		Janus: &janus.Config{
-			Address:    "ws://localhost:8080",
-			MaxLate:    10,
-			SampleRate: 48000,
+			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
 		},
 	}
 }
+
+// http://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io

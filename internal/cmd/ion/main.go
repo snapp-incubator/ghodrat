@@ -3,10 +3,10 @@ package ion
 import (
 	"fmt"
 
+	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/config"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
-	ion_server "github.com/snapp-incubator/ghodrat/internal/vendors/ion-sfu/server"
-	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	ion_server "github.com/snapp-incubator/ghodrat/internal/vendors/ion-sfu"
 	"github.com/spf13/cobra"
 	zap2 "go.uber.org/zap"
 )
@@ -33,20 +33,14 @@ func run(cmd *cobra.Command, _ []string) {
 
 	//waitGroup.Add(configs.CallCount)
 
-	engine := ion_server.NewEngine(configs.Ion, lg)
+	engine := ion_server.NewEngine(nil, lg)
 
 	for index := 0; index < configs.CallCount; index++ {
 		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
 
-		af, err := clients.NewAudioFactory(configs.Client)
-		if err != nil {
-			zap.Panic("failed to create audio factory", zap2.Error(err))
-		}
-
-		c := &clients.Client{
-			Config:       configs.Client,
-			Logger:       zap,
-			AudioFactory: af,
+		c := &client.Client{
+			Config: configs.Client,
+			Logger: zap,
 		}
 
 		peer, err := engine.NewClient(c)
