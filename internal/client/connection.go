@@ -1,12 +1,14 @@
 package client
 
 import (
+	"context"
+
 	"github.com/pion/webrtc/v3"
 	"go.uber.org/zap"
 )
 
 // InitiatePeerConnection returns webrtc-peer-connection with opus media-engine.
-func (client *Client) CreatePeerConnection() {
+func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelFunc) {
 	var err error
 
 	// A MediaEngine defines the codecs supported by a PeerConnection
@@ -47,6 +49,15 @@ func (client *Client) CreatePeerConnection() {
 	if err != nil {
 		client.Logger.Fatal("failed to create peer connection", zap.Error(err))
 	}
+
+	// Set the handler for ICE connection state
+	// This will notify you when the peer has connected/disconnected
+	client.connection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
+		client.Logger.Info("connection state has changed", zap.String("state", connectionState.String()))
+		if connectionState == webrtc.ICEConnectionStateConnected {
+			iceConnectedCtxCancel()
+		}
+	})
 }
 
 // NewPeerConnection returns webrtc-peer-connection with opus media-engine.

@@ -30,5 +30,4 @@ func (c *Client) Call(callMode CallMode) error {
 
 func (c *Client) HangUp() {
 	c.serverClient.Close()
-	c.peerClient.CloseOpusTrack()
 }

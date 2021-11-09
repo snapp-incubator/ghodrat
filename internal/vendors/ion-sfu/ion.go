@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	sdk "github.com/pion/ion-sdk-go"
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	"github.com/snapp-incubator/ghodrat/internal/client"
 	"go.uber.org/zap"
 )
 
@@ -20,7 +20,7 @@ type Engine struct {
 
 type Client struct {
 	Logger     *zap.Logger
-	peerClient *clients.Client
+	peerClient *client.Client
 
 	serverClient *sdk.Client
 
@@ -48,7 +48,7 @@ func NewEngine(cfg *Config, logger *zap.Logger) *Engine {
 	}
 }
 
-func (e *Engine) NewClient(peerClient *clients.Client) (*Client, error) {
+func (e *Engine) NewClient(peerClient *client.Client) (*Client, error) {
 	cid := ""
 
 	uuid, err := uuid.NewUUID()
@@ -66,10 +66,6 @@ func (e *Engine) NewClient(peerClient *clients.Client) (*Client, error) {
 
 	// Change c.OnTrack for custom packet processing,
 	//default approach is described in c.Join()
-
-	c.OnTrack = func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
-		peerClient.SaveOpusTrack(track)
-	}
 
 	c.OnError = func(err error) {
 		e.Logger.Error("ion client error", zap.String("cid", cid), zap.Error(err))

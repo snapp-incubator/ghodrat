@@ -1,53 +1,23 @@
-package janus_server
+package janus
 
 import (
-	"context"
-	"errors"
-	"io"
+	"fmt"
 
 	"github.com/notedit/janus-go"
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	"github.com/snapp-incubator/ghodrat/internal/client"
 	"go.uber.org/zap"
 )
 
 type Janus struct {
 	Logger *zap.Logger
-	Client *clients.Client
+	Client *client.Client
 	Config *Config
 
-	rtpSender *webrtc.RTPSender
-
-	audioTrack        *webrtc.TrackLocalStaticSample
 	audioBridgeHandle *janus.Handle
-
-	iceConnectedCtx       context.Context
-	iceConnectedCtxCancel context.CancelFunc
 }
 
 func (j *Janus) initiate() {
-	j.Client.CreatePeerConnection()
-
-	j.iceConnectedCtx, j.iceConnectedCtxCancel = context.WithCancel(context.Background())
-
-	// Set the handler for ICE connection state
-	// This will notify you when the peer has connected/disconnected
-	j.Client.OnICEConnectionStateChange(j.onICEConnectionStateChange)
-
-	// Set a handler for when a new remote track starts, this handler copies inbound RTP packets,
-	// replaces the SSRC and sends them back
-	j.Client.OnTrack(j.Client.SaveOpusTrack)
-
-	var err error
-
-	// Create a audio track
-	j.audioTrack, err = webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: "audio/opus"}, "audio", "pion")
-	if err != nil {
-		j.Logger.Fatal("failed to create audio track", zap.Error(err))
-	}
-
-	j.rtpSender = j.Client.AddTrack(j.audioTrack)
-
 	gateway, err := janus.Connect(j.Config.Address)
 	if err != nil {
 		j.Logger.Fatal("failed to connect to janus", zap.Error(err))
@@ -58,44 +28,14 @@ func (j *Janus) initiate() {
 		j.Logger.Fatal("failed to create session", zap.Error(err))
 	}
 
-	handle, err := session.Attach("janus.plugin.audiobridge")
+	j.audioBridgeHandle, err = session.Attach("janus.plugin.audiobridge")
 	if err != nil {
 		j.Logger.Fatal("failed to create handle", zap.Error(err))
 	}
-
-	j.audioBridgeHandle = handle
-
-	go j.watchHandle(j.audioBridgeHandle)
 }
 
-// readRTCPPackets reads incoming RTCP packets
-// Before these packets are returned they are processed by interceptors. For things
-// like NACK this needs to be called.
-func (j *Janus) readRTCPPackets() {
-	const bufferSize = 1500
-
-	rtcpBuf := make([]byte, bufferSize)
-
-	for {
-		if _, _, err := j.rtpSender.Read(rtcpBuf); err != nil {
-			if errors.Is(err, io.EOF) {
-				return
-			}
-
-			j.Logger.Error("failed to read rtcp packets", zap.Error(err))
-		}
-	}
-}
-
-func (j *Janus) onICEConnectionStateChange(connectionState webrtc.ICEConnectionState) {
-	j.Logger.Info("connection state has changed", zap.String("state", connectionState.String()))
-
-	if connectionState == webrtc.ICEConnectionStateConnected {
-		j.iceConnectedCtxCancel()
-	}
-}
-
-func (j *Janus) watchHandle(handle *janus.Handle) {
+func (j *Janus) handle() {
+	handle := j.audioBridgeHandle
 	for {
 		msg := <-handle.Events
 		switch msg := msg.(type) {
@@ -111,4 +51,45 @@ func (j *Janus) watchHandle(handle *janus.Handle) {
 			j.Logger.Info("EventMsg", zap.Any("data", msg.Plugindata.Data))
 		}
 	}
+}
+
+func (j *Janus) call() error {
+	request := map[string]interface{}{"request": "create"}
+	create, err := j.audioBridgeHandle.Request(request)
+	if err != nil {
+		return fmt.Errorf("failed to create room: %w", err)
+	}
+
+	roomID := create.PluginData.Data["room"].(float64)
+
+	j.Logger.Info("room created", zap.Float64("room", roomID))
+
+	body := map[string]interface{}{"request": "join", "room": roomID}
+	join, err := j.audioBridgeHandle.Message(body, nil)
+	if err != nil {
+		return fmt.Errorf("failed to join room: %w", err)
+	}
+
+	j.Logger.Info("joined to room", zap.Float64("id", join.Plugindata.Data["id"].(float64)),
+		zap.Any("participants", join.Plugindata.Data["participants"]))
+
+	body = map[string]interface{}{"request": "configure"}
+	jsep := map[string]interface{}{
+		"sdp":  j.Client.GetLocalDescription().SDP,
+		"type": "offer",
+	}
+
+	configure, err := j.audioBridgeHandle.Message(body, jsep)
+	if err != nil {
+		return fmt.Errorf("failed to send offer: %w", err)
+	}
+
+	if configure.Jsep != nil {
+		j.Client.SetRemoteDescription(webrtc.SessionDescription{
+			Type: webrtc.SDPTypeAnswer,
+			SDP:  configure.Jsep["sdp"].(string),
+		})
+	}
+
+	return nil
 }

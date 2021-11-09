@@ -1,14 +1,20 @@
-package janus_server
+package janus
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 )
 
-func (j *Janus) TearUp(doneChannel chan bool) {
-	j.initiate()
-	go func() { j.readRTCPPackets() }()
+func (j *Janus) StartCall(doneChannel chan bool) {
+	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
 
-	go func() { j.Client.StreamAudioFile(j.iceConnectedCtx, j.audioTrack.WriteSample, doneChannel) }()
+	j.Client.CreatePeerConnection(iceConnectedCtxCancel)
+
+	j.initiate()
+	go j.handle()
+
+	j.Client.AddTrack(doneChannel, iceConnectedCtx)
 
 	j.Client.CreateAndSetLocalOffer()
 
@@ -18,7 +24,6 @@ func (j *Janus) TearUp(doneChannel chan bool) {
 	}
 }
 
-func (j *Janus) TearDown() {
+func (j *Janus) HangUp() {
 	j.Client.ClosePeerConnection()
-	j.Client.CloseOpusTrack()
 }

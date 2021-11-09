@@ -1,4 +1,4 @@
-package janus_server
+package janus
 
 type Config struct {
 	Address    string `koanf:"address"`
