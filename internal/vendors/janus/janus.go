@@ -2,14 +2,9 @@ package janus
 
 import (
 	"fmt"
-	"os"
-	"time"
 
-	"github.com/at-wat/ebml-go/webm"
 	"github.com/notedit/janus-go"
-	"github.com/pion/rtp/codecs"
 	"github.com/pion/webrtc/v3"
-	"github.com/pion/webrtc/v3/pkg/media/samplebuilder"
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"go.uber.org/zap"
 )
@@ -20,42 +15,9 @@ type Janus struct {
 	Config *Config
 
 	audioBridgeHandle *janus.Handle
-	audioWriter       webm.BlockWriteCloser
-	audioBuilder      *samplebuilder.SampleBuilder
-	audioTimestamp    time.Duration
 }
 
 func (j *Janus) initiate() {
-	j.audioBuilder = samplebuilder.New(j.Config.MaxLate, &codecs.OpusPacket{}, j.Config.SampleRate)
-
-	file, err := os.CreateTemp(os.TempDir(), "ghodrat-*.opus")
-	if err != nil {
-		j.Logger.Fatal("failed to open audio file for writing", zap.Error(err))
-	}
-
-	ws, err := webm.NewSimpleBlockWriter(file, []webm.TrackEntry{
-		{
-			Name:            "Audio",
-			TrackNumber:     1,
-			TrackUID:        12345,
-			CodecID:         "A_OPUS",
-			TrackType:       2,
-			DefaultDuration: 20000000,
-			Audio: &webm.Audio{
-				SamplingFrequency: 48000.0,
-				Channels:          2,
-			},
-		},
-	})
-
-	if err != nil {
-		j.Logger.Fatal("failed to create block write", zap.Error(err))
-	}
-
-	j.audioWriter = ws[0]
-
-	// j.Client.OnTrack(j.saveOpusTrack)
-
 	gateway, err := janus.Connect(j.Config.Address)
 	if err != nil {
 		j.Logger.Fatal("failed to connect to janus", zap.Error(err))

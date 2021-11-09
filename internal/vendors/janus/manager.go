@@ -12,6 +12,7 @@ func (j *Janus) StartCall(doneChannel chan bool) {
 	j.Client.CreatePeerConnection(iceConnectedCtxCancel)
 
 	j.initiate()
+
 	go j.handle()
 
 	j.Client.ReadTrack(doneChannel, iceConnectedCtx)

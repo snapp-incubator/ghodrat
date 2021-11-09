@@ -30,7 +30,7 @@ func Default() Config {
 			RTPCodec: &client.RTPCodec{
 				MimeType:    "audio/opus",
 				ClockRate:   48000,
-				Channels:    0,
+				Channels:    2,
 				PayloadType: 111,
 				CodecType:   1,
 			},
@@ -40,7 +40,7 @@ func Default() Config {
 			// RTPCodec: &client.RTPCodec{
 			// 	MimeType:    "video/vp8",
 			// 	ClockRate:   90000,
-			// 	Channels:    0,
+			// 	Channels:    2,
 			// 	PayloadType: 96,
 			// 	CodecType:   2,
 			// },
