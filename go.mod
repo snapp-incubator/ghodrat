@@ -23,7 +23,10 @@ require (
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
 )
 
-require github.com/pion/ion-sdk-go v0.6.0
+require (
+	github.com/google/uuid v1.3.0
+	github.com/pion/ion-sdk-go v0.6.0
+)
 
 require (
 	github.com/ebml-go/ebml v0.0.0-20160925193348-ca8851a10894 // indirect
@@ -31,7 +34,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lucsky/cuid v1.0.2 // indirect
