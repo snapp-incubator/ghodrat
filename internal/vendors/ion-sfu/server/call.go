@@ -1,4 +1,4 @@
-package ion
+package ion_server
 
 import sdk "github.com/pion/ion-sdk-go"
 

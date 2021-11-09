@@ -4,17 +4,28 @@ import (
 	"log"
 	"strings"
 
-	"github.com/snapp-incubator/ghodrat/internal/server/ion"
-
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
-	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
-	"github.com/snapp-incubator/ghodrat/internal/server/janus"
 	"github.com/snapp-incubator/ghodrat/internal/tracer"
+	ion "github.com/snapp-incubator/ghodrat/internal/vendors/ion-sfu/server"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	janus_server "github.com/snapp-incubator/ghodrat/internal/vendors/janus/server"
+	// "log"
+	// "strings"
+	// "github.com/snapp-incubator/ghodrat/internal/server/ion"
+	// "github.com/knadh/koanf"
+	// "github.com/knadh/koanf/parsers/yaml"
+	// "github.com/knadh/koanf/providers/env"
+	// "github.com/knadh/koanf/providers/file"
+	// "github.com/knadh/koanf/providers/structs"
+	// "github.com/snapp-incubator/ghodrat/internal/client"
+	// "github.com/snapp-incubator/ghodrat/internal/logger"
+	// "github.com/snapp-incubator/ghodrat/internal/server/janus"
+	// "github.com/snapp-incubator/ghodrat/internal/tracer"
 )
 
 const (
@@ -23,12 +34,12 @@ const (
 )
 
 type Config struct {
-	Logger    *logger.Config `koanf:"logger"`
-	Tracer    *tracer.Config `koanf:"tracer"`
-	CallCount int            `koanf:"call-count"`
-	Client    *client.Config `koanf:"client"`
-	Janus     *janus.Config  `koanf:"janus"`
-	Ion       *ion.Config    `koanf:"ion"`
+	Logger    *logger.Config       `koanf:"logger"`
+	Tracer    *tracer.Config       `koanf:"tracer"`
+	CallCount int                  `koanf:"call-count"`
+	Client    *clients.Config      `koanf:"client"`
+	Janus     *janus_server.Config `koanf:"janus"`
+	Ion       *ion.Config          `koanf:"ion"`
 }
 
 // New reads configuration with viper.

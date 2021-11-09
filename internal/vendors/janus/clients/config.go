@@ -1,4 +1,4 @@
-package client
+package clients
 
 type Config struct {
 	AudioFileAddress string `koanf:"audio-file-address"`

@@ -1,4 +1,4 @@
-package client
+package clients
 
 import (
 	"github.com/pion/webrtc/v3"

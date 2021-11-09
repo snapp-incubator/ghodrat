@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
-	"github.com/snapp-incubator/ghodrat/internal/server/janus"
 	"github.com/snapp-incubator/ghodrat/internal/tracer"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	janus_server "github.com/snapp-incubator/ghodrat/internal/vendors/janus/server"
 )
 
 // Default return default configuration.
@@ -23,13 +23,13 @@ func Default() Config {
 		},
 		CallCount: 1,
 
-		Client: &client.Config{
+		Client: &clients.Config{
 			AudioFileAddress: "./static/audio.ogg",
 			AudioMaxLate:     10,
 			AudioSampleRate:  48000,
-			Connection: client.Connection{
+			Connection: clients.Connection{
 				STUNServer: "stun:stun.l.google.com:19302",
-				RTPCodec: client.RTPCodec{
+				RTPCodec: clients.RTPCodec{
 					ClockRate:   48000,
 					Channels:    2,
 					PayloadType: 111,
@@ -37,8 +37,8 @@ func Default() Config {
 			},
 		},
 
-		Janus: &janus.Config{
-			Address: "ws://localhost:8080",
+		Janus: &janus_server.Config{
+			Address:    "ws://localhost:8080",
 			MaxLate:    10,
 			SampleRate: 48000,
 		},

@@ -1,4 +1,4 @@
-package janus
+package janus_server
 
 import (
 	"fmt"

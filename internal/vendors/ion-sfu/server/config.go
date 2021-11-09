@@ -1,4 +1,4 @@
-package ion
+package ion_server
 
 type Config struct {
 	Address     string   `koanf:"address"`

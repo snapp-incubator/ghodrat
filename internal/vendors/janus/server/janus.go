@@ -1,4 +1,4 @@
-package janus
+package janus_server
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 
 	"github.com/notedit/janus-go"
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/internal/client"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
 	"go.uber.org/zap"
 )
 
 type Janus struct {
 	Logger *zap.Logger
-	Client *client.Client
+	Client *clients.Client
 	Config *Config
 
 	rtpSender *webrtc.RTPSender

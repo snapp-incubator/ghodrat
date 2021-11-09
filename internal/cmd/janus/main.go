@@ -8,10 +8,10 @@ import (
 
 	zap2 "go.uber.org/zap"
 
-	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/config"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
-	"github.com/snapp-incubator/ghodrat/internal/server/janus"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
+	janus_server "github.com/snapp-incubator/ghodrat/internal/vendors/janus/server"
 	"github.com/spf13/cobra"
 )
 
@@ -42,22 +42,22 @@ func run(_ *cobra.Command, _ []string) {
 	for index := 0; index < configs.CallCount; index++ {
 		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
 
-		af, err := client.NewAudioFactory(configs.Client)
+		af, err := clients.NewAudioFactory(configs.Client)
 		if err != nil {
 			zap.Panic("failed to create audio factory", zap2.Error(err))
 		}
 
-		server := janus.Janus{
+		server := janus_server.Janus{
 			Config: configs.Janus,
 			Logger: zap,
-			Client: &client.Client{
+			Client: &clients.Client{
 				Config:       configs.Client,
 				Logger:       zap,
 				AudioFactory: af,
 			},
 		}
 
-		go func(server janus.Janus) {
+		go func(server janus_server.Janus) {
 			doneChannel := make(chan bool)
 			server.TearUp(doneChannel)
 			<-doneChannel

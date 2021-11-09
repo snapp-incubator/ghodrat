@@ -1,4 +1,4 @@
-package ion
+package ion_server
 
 import (
 	"math/rand"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	sdk "github.com/pion/ion-sdk-go"
 	"github.com/pion/webrtc/v3"
-	"github.com/snapp-incubator/ghodrat/internal/client"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/janus/clients"
 	"go.uber.org/zap"
 )
 
@@ -20,7 +20,7 @@ type Engine struct {
 
 type Client struct {
 	Logger     *zap.Logger
-	peerClient *client.Client
+	peerClient *clients.Client
 
 	serverClient *sdk.Client
 
@@ -48,7 +48,7 @@ func NewEngine(cfg *Config, logger *zap.Logger) *Engine {
 	}
 }
 
-func (e *Engine) NewClient(peerClient *client.Client) (*Client, error) {
+func (e *Engine) NewClient(peerClient *clients.Client) (*Client, error) {
 	cid := ""
 
 	uuid, err := uuid.NewUUID()
