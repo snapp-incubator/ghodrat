@@ -6,7 +6,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/config"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
-	"github.com/snapp-incubator/ghodrat/internal/vendors/ion_sfu"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/ion"
 	"github.com/spf13/cobra"
 	zap2 "go.uber.org/zap"
 )
@@ -33,7 +33,7 @@ func run(cmd *cobra.Command, _ []string) {
 
 	//waitGroup.Add(configs.CallCount)
 
-	engine := ion_sfu.NewEngine(nil, lg)
+	engine := ion.NewEngine(nil, lg)
 
 	for index := 0; index < configs.CallCount; index++ {
 		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
@@ -51,7 +51,7 @@ func run(cmd *cobra.Command, _ []string) {
 		zap.Info("starting ion call")
 
 		// Will change for PubSub mode
-		if err = peer.Call(ion_sfu.SubOnly); err != nil {
+		if err = peer.Call(ion.SubOnly); err != nil {
 			zap.Panic("failed to initiate call", zap2.Error(err))
 		}
 		// it's probably not a good idea.

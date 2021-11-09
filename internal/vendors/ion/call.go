@@ -1,4 +1,4 @@
-package ion_sfu
+package ion
 
 import sdk "github.com/pion/ion-sdk-go"
 

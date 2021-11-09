@@ -1,4 +1,4 @@
-package ion_sfu
+package ion
 
 type Config struct {
 	Address     string   `koanf:"address"`
