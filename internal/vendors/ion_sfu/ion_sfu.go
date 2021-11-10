@@ -94,9 +94,7 @@ func (ion_sfu *Ion_sfu) offer() {
 	ion_sfu.connection.WriteMessage(websocket.TextMessage, messageBytes)
 }
 
-func (ion_sfu *Ion_sfu) readMessage(done chan bool) {
-	defer close(done)
-
+func (ion_sfu *Ion_sfu) readMessage() {
 	for {
 		_, message, err := ion_sfu.connection.ReadMessage()
 		if err != nil || err == io.EOF {
@@ -104,7 +102,7 @@ func (ion_sfu *Ion_sfu) readMessage(done chan bool) {
 			break
 		}
 
-		fmt.Printf("recv: %s", message)
+		fmt.Printf("\nrecv: %s\n", message)
 
 		var response Response
 		json.Unmarshal(message, &response)

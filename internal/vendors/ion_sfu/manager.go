@@ -9,7 +9,7 @@ func (ion_sfu *Ion_sfu) StartCall(doneChannel chan bool) {
 
 	ion_sfu.Client.CreatePeerConnection(iceConnectedCtxCancel)
 
-	go ion_sfu.readMessage(doneChannel)
+	go ion_sfu.readMessage()
 
 	ion_sfu.Client.ReadTrack(doneChannel, iceConnectedCtx)
 
