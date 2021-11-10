@@ -18,11 +18,11 @@ func Default() Config {
 		},
 		Tracer: &tracer.Config{
 			Enabled:    false,
-			Host:       "localhost",
+			Host:       "",
 			Port:       6831,
 			SampleRate: 0.1,
 		},
-		CallCount: 10,
+		CallCount: 1,
 		Client: &client.Config{
 			STUNServer: "stun:stun.l.google.com:19302",
 

@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: "ghodrat-ion-sfu"
 data:
-  ghodrat_call-count: "1"
+  ghodrat_call-count: "100"
 
   ghodrat_logger_development: "false"
   ghodrat_logger_encoding: "json"
@@ -17,12 +17,12 @@ data:
   ghodrat_tracer_port: "6831"
   ghodrat_tracer_sample-rate: "0.1"
 
-  ghodrat_client_audio-file-address: "bin/ghodrat/audio.ogg"
-  ghodrat_client_connection_stun-servers: "stun:stun.l.google.com:19302"
-  ghodrat_client_connection_rtp-codec_clock-rate: "48000"
-  ghodrat_client_connection_rtp-codec_channels: "2"
-  ghodrat_client_connection_rtp-codec_payload-type: "111"
+  ghodrat_client_track-address: "bin/ghodrat/audio.ogg"
+  ghodrat_client_stun-server: "stun:stun.l.google.com:19302"
+  ghodrat_client_rtp-codec_rtp-codec_mime-type: "audio/opus"
+  ghodrat_client_rtp-codec_rtp-codec_clock-rate: "48000"
+  ghodrat_client_rtp-codec_rtp-codec_channels: "2"
+  ghodrat_client_rtp-codec_rtp-codec_payload-type: "111"
+  ghodrat_client_rtp-codec_rtp-codec_codec-type: "1"
 
   ghodrat_ion-sfu_address: "ws://ion-sfu:8188"
-  ghodrat_ion-sfu_max-late: "10"
-  ghodrat_ion-sfu_sample-rate: "48000"
