@@ -12,7 +12,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
 	"github.com/snapp-incubator/ghodrat/internal/tracer"
-	"github.com/snapp-incubator/ghodrat/internal/vendors/ion_sfu"
+	ion_sfu "github.com/snapp-incubator/ghodrat/internal/vendors/ion-sfu"
 	"github.com/snapp-incubator/ghodrat/internal/vendors/janus"
 )
 
