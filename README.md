@@ -7,6 +7,11 @@
 - ion-sfu
 - janus
 
+## features
+
+- audio call
+- video call
+
 
 ## ION-SFU media-server under load
 
