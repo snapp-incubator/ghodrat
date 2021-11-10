@@ -16,20 +16,20 @@ jobs:
       #     version: latest
       #     args: --enable-all
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Go environment
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.17"
+  # test:
+  #   name: Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Setup Go environment
+  #       uses: actions/setup-go@v2
+  #       with:
+  #         go-version: "1.17"
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Run tests
-        run: make unit-test
+  #     - name: Run tests
+  #       run: make unit-test
 
   build-push:
     name: Build & Push
