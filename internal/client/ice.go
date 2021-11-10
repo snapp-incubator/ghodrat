@@ -10,6 +10,10 @@ func (client *Client) OnIceCandidate(callback func(candidate *webrtc.ICECandidat
 }
 
 func (client *Client) AddIceCandidate(c *webrtc.ICECandidateInit) {
+	if client.connection.RemoteDescription() == nil {
+		return
+	}
+
 	err := client.connection.AddICECandidate(*c)
 	if err != nil {
 		client.Logger.Fatal("failed to add ice candidate", zap.Error(err))
