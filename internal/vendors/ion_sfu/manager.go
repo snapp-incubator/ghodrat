@@ -1,30 +1,28 @@
 package ion_sfu
 
-import (
-	"context"
+import "context"
 
-	"go.uber.org/zap"
-)
-
-func (j *Janus) StartCall(doneChannel chan bool) {
+func (ion_sfu *Ion_sfu) StartCall(doneChannel chan bool) {
 	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
 
-	j.Client.CreatePeerConnection(iceConnectedCtxCancel)
+	ion_sfu.dial()
 
-	j.initiate()
+	ion_sfu.Client.CreatePeerConnection(iceConnectedCtxCancel)
 
-	go j.handle()
+	go ion_sfu.readMessage(doneChannel)
 
-	j.Client.ReadTrack(doneChannel, iceConnectedCtx)
+	ion_sfu.Client.ReadTrack(doneChannel, iceConnectedCtx)
 
-	j.Client.CreateAndSetLocalOffer()
+	ion_sfu.Client.CreateAndSetOffer()
+	ion_sfu.Client.OnIceCandidate(ion_sfu.onIceCandidate)
+	ion_sfu.offer()
 
-	j.Logger.Info("start call")
-	if err := j.call(); err != nil {
-		j.Logger.Fatal("failed to start a call", zap.Error(err))
-	}
+	// ion_sfu.Logger.Info("start call")
+	// if err := ion_sfu.call(); err != nil {
+	// 	ion_sfu.Logger.Fatal("failed to start a call", zap.Error(err))
+	// }
 }
 
-func (j *Janus) HangUp() {
+func (j *Ion_sfu) HangUp() {
 	j.Client.ClosePeerConnection()
 }

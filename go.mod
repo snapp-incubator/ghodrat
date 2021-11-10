@@ -23,7 +23,9 @@ require (
 
 require (
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/pion/ion-sdk-go v0.6.0
+	github.com/sourcegraph/jsonrpc2 v0.0.0-20210201082850-366fbb520750
 )
 
 require (
@@ -32,7 +34,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lucsky/cuid v1.0.2 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect

@@ -94,11 +94,11 @@ func (ion_sfu *Ion_sfu) offer() {
 	ion_sfu.connection.WriteMessage(websocket.TextMessage, messageBytes)
 }
 
-func (ion_sfu *Ion_sfu) readMessage(connection *websocket.Conn, done chan struct{}) {
+func (ion_sfu *Ion_sfu) readMessage(done chan bool) {
 	defer close(done)
 
 	for {
-		_, message, err := connection.ReadMessage()
+		_, message, err := ion_sfu.connection.ReadMessage()
 		if err != nil || err == io.EOF {
 			log.Fatal("Error reading: ", err)
 			break
@@ -111,28 +111,20 @@ func (ion_sfu *Ion_sfu) readMessage(connection *websocket.Conn, done chan struct
 
 		// determine which event the message is for and handle them accordingly
 		if response.Id == ion_sfu.connectionID {
-			result := *response.Result
-			if err := peerConnection.SetRemoteDescription(result); err != nil {
-				log.Fatal(err)
-			}
+			ion_sfu.Client.SetRemoteDescription(*response.Result)
 		} else if response.Id != 0 && response.Method == "offer" {
 			// the sfu sends an offer and we react by saving the send offer into the remote
 			// description of our peer connection and sending back an answer with the
 			// local description so we can connect to the remote peer.
 
-			peerConnection.SetRemoteDescription(*response.Params)
-			answer, err := peerConnection.CreateAnswer(nil)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			peerConnection.SetLocalDescription(answer)
+			ion_sfu.Client.SetRemoteDescription(*response.Result)
+			ion_sfu.Client.CreateAndSetAnswer()
 
 			connectionUUID := uuid.New()
 			ion_sfu.connectionID = uint64(connectionUUID.ID())
 
 			offerJSON, err := json.Marshal(&SendAnswer{
-				Answer: peerConnection.LocalDescription(),
+				Answer: ion_sfu.Client.GetLocalDescription(),
 				SID:    "test room",
 			})
 			if err != nil {
@@ -145,9 +137,9 @@ func (ion_sfu *Ion_sfu) readMessage(connection *websocket.Conn, done chan struct
 				Method: "answer",
 				Params: params,
 				ID: jsonrpc2.ID{
+					Num:      ion_sfu.connectionID,
 					IsString: false,
 					Str:      "",
-					Num:      ion_sfu.connectionID,
 				},
 			}
 
@@ -155,21 +147,16 @@ func (ion_sfu *Ion_sfu) readMessage(connection *websocket.Conn, done chan struct
 			json.NewEncoder(reqBodyBytes).Encode(answerMessage)
 
 			messageBytes := reqBodyBytes.Bytes()
-			connection.WriteMessage(websocket.TextMessage, messageBytes)
+			ion_sfu.connection.WriteMessage(websocket.TextMessage, messageBytes)
 		} else if response.Method == "trickle" {
 			// The sfu sends a new ICE candidate and we add it to the peer connection
-
 			var trickleResponse TrickleResponse
 
 			if err := json.Unmarshal(message, &trickleResponse); err != nil {
 				log.Fatal(err)
 			}
 
-			err := peerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
-
-			if err != nil {
-				log.Fatal(err)
-			}
+			ion_sfu.Client.AddIceCandidate(trickleResponse.Params.Candidate)
 		}
 	}
 }

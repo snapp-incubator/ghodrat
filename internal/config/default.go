@@ -4,6 +4,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
 	"github.com/snapp-incubator/ghodrat/internal/tracer"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/ion_sfu"
 	"github.com/snapp-incubator/ghodrat/internal/vendors/janus"
 )
 
@@ -48,7 +49,8 @@ func Default() Config {
 		Janus: &janus.Config{
 			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
 		},
+		Ion_sfu: &ion_sfu.Config{
+			Address: "ws://ion-sfu-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
+		},
 	}
 }
-
-// http://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io

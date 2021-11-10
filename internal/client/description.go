@@ -5,14 +5,25 @@ import (
 	"go.uber.org/zap"
 )
 
-func (client *Client) CreateAndSetLocalOffer() {
+func (client *Client) CreateAndSetOffer() {
 	offer, err := client.connection.CreateOffer(nil)
 	if err != nil {
-		client.Logger.Fatal("failed to create local SDP offer", zap.Error(err))
+		client.Logger.Fatal("failed to create SDP offer", zap.Error(err))
 	}
 
 	if err = client.connection.SetLocalDescription(offer); err != nil {
-		client.Logger.Fatal("failed to set local SDP offer", zap.Error(err))
+		client.Logger.Fatal("failed to set SDP offer", zap.Error(err))
+	}
+}
+
+func (client *Client) CreateAndSetAnswer() {
+	answer, err := client.connection.CreateAnswer(nil)
+	if err != nil {
+		client.Logger.Fatal("failed to create SDP answer", zap.Error(err))
+	}
+
+	if err = client.connection.SetLocalDescription(answer); err != nil {
+		client.Logger.Fatal("failed to set SDP answer", zap.Error(err))
 	}
 }
 

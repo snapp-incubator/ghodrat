@@ -12,6 +12,7 @@ import (
 	"github.com/snapp-incubator/ghodrat/internal/client"
 	"github.com/snapp-incubator/ghodrat/internal/logger"
 	"github.com/snapp-incubator/ghodrat/internal/tracer"
+	"github.com/snapp-incubator/ghodrat/internal/vendors/ion_sfu"
 	"github.com/snapp-incubator/ghodrat/internal/vendors/janus"
 )
 
@@ -21,12 +22,12 @@ const (
 )
 
 type Config struct {
-	Logger    *logger.Config `koanf:"logger"`
-	Tracer    *tracer.Config `koanf:"tracer"`
-	CallCount int            `koanf:"call-count"`
-	Client    *client.Config `koanf:"client"`
-	Janus     *janus.Config  `koanf:"janus"`
-	// Ion       *ion.Config    `koanf:"ion"`
+	Logger    *logger.Config  `koanf:"logger"`
+	Tracer    *tracer.Config  `koanf:"tracer"`
+	CallCount int             `koanf:"call-count"`
+	Client    *client.Config  `koanf:"client"`
+	Janus     *janus.Config   `koanf:"janus"`
+	Ion_sfu   *ion_sfu.Config `koanf:"ion-sfu"`
 }
 
 // New reads configuration with viper.

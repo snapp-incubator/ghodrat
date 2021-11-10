@@ -9,6 +9,7 @@ import (
 
 // InitiatePeerConnection returns webrtc-peer-connection with opus media-engine.
 func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelFunc) {
+	client.iceConnectedCtxCancel = iceConnectedCtxCancel
 	var err error
 
 	// A MediaEngine defines the codecs supported by a PeerConnection
@@ -51,12 +52,7 @@ func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelF
 
 	// Set the handler for ICE connection state
 	// This will notify you when the peer has connected/disconnected
-	client.connection.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) {
-		client.Logger.Info("connection state has changed", zap.String("state", connectionState.String()))
-		if connectionState == webrtc.ICEConnectionStateConnected {
-			iceConnectedCtxCancel()
-		}
-	})
+	client.connection.OnICEConnectionStateChange(client.onICEConnectionStateChange)
 }
 
 // NewPeerConnection returns webrtc-peer-connection with opus media-engine.

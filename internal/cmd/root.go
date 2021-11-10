@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/snapp-incubator/ghodrat/internal/cmd/ion_sfu"
 	"github.com/snapp-incubator/ghodrat/internal/cmd/janus"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +23,7 @@ func Execute() {
 	// nolint: exhaustivestruct
 	cmd := &cobra.Command{Short: short, Long: long}
 
-	cmd.AddCommand(janus.Command())
+	cmd.AddCommand(janus.Command(), ion_sfu.Command())
 
 	if err := cmd.Execute(); err != nil {
 		log.Println(errExecuteCMD, err)
