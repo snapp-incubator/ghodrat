@@ -22,7 +22,7 @@ func Default() Config {
 			Port:       6831,
 			SampleRate: 0.1,
 		},
-		CallCount: 1,
+		CallCount: 10,
 		Client: &client.Config{
 			STUNServer: "stun:stun.l.google.com:19302",
 
@@ -48,9 +48,11 @@ func Default() Config {
 		},
 		Janus: &janus.Config{
 			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
+			// Address: "ws://localhost:7000",
 		},
 		Ion_sfu: &ion_sfu.Config{
-			Address: "ws://localhost:7000/ws",
+			Address: "ws://ion-sfu-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io/ws",
+			// Address: "ws://localhost:7000/ws",
 		},
 	}
 }

@@ -5,6 +5,7 @@ import "context"
 func (ion_sfu *Ion_sfu) StartCall(doneChannel chan bool) {
 	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
 
+	ion_sfu.generateSID()
 	ion_sfu.dial()
 
 	ion_sfu.Client.CreatePeerConnection(iceConnectedCtxCancel)

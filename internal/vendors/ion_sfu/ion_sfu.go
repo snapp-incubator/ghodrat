@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -15,6 +16,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
 type Ion_sfu struct {
 	Logger *zap.Logger
 	Client *client.Client
@@ -22,6 +25,7 @@ type Ion_sfu struct {
 
 	connection   *websocket.Conn
 	connectionID uint64
+	sid          string
 }
 
 func (ion_sfu *Ion_sfu) dial() {
@@ -32,6 +36,14 @@ func (ion_sfu *Ion_sfu) dial() {
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
+}
+
+func (ion_sfu *Ion_sfu) generateSID() {
+	b := make([]rune, 20)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	ion_sfu.sid = string(b)
 }
 
 func (ion_sfu *Ion_sfu) onIceCandidate(candidate *webrtc.ICECandidate) {
@@ -65,7 +77,7 @@ func (ion_sfu *Ion_sfu) onIceCandidate(candidate *webrtc.ICECandidate) {
 func (ion_sfu *Ion_sfu) offer() {
 	offerJSON, err := json.Marshal(&SendOffer{
 		Offer: ion_sfu.Client.GetLocalDescription(),
-		SID:   "test room",
+		SID:   ion_sfu.sid,
 	})
 
 	if err != nil {
@@ -123,7 +135,7 @@ func (ion_sfu *Ion_sfu) readMessage() {
 
 			offerJSON, err := json.Marshal(&SendAnswer{
 				Answer: ion_sfu.Client.GetLocalDescription(),
-				SID:    "test room",
+				SID:    ion_sfu.sid,
 			})
 			if err != nil {
 				log.Fatal(err)
