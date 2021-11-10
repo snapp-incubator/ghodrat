@@ -25,4 +25,4 @@ data:
   ghodrat_client_rtp-codec_rtp-codec_payload-type: "111"
   ghodrat_client_rtp-codec_rtp-codec_codec-type: "1"
 
-  ghodrat_ion-sfu_address: "ws://ion-sfu:8188"
+  ghodrat_ion-sfu_address: "ws://ion-sfu:7000/ws"

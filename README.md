@@ -8,6 +8,12 @@
 - janus
 
 
+## ION-SFU media-server under load
+
+<p align="center">
+  <img src="assets/statistics-ion-sfu.png" />
+</p>
+
 ## Janus media-server under load
 
 <p align="center">
