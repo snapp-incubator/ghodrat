@@ -27,7 +27,7 @@ type Config struct {
 	CallCount int             `koanf:"call-count"`
 	Client    *client.Config  `koanf:"client"`
 	Janus     *janus.Config   `koanf:"janus"`
-	Ion_sfu   *ion_sfu.Config `koanf:"ion-sfu"`
+	IonSfu    *ion_sfu.Config `koanf:"ion-sfu"`
 }
 
 // New reads configuration with viper.

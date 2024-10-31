@@ -20,7 +20,7 @@ const (
 const ExitFailure = 1
 
 func Execute() {
-	// nolint: exhaustivestruct
+	// nolint: exhaustruct
 	cmd := &cobra.Command{Short: short, Long: long}
 
 	cmd.AddCommand(janus.Command(), ion_sfu.Command())

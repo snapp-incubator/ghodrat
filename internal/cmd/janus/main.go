@@ -19,13 +19,14 @@ const (
 )
 
 func Command() *cobra.Command {
-	// nolint: exhaustivestruct
+	// nolint: exhaustruct
 	cmd := &cobra.Command{Use: use, Short: short, Run: run, PreRun: preRun}
 
 	return cmd
 }
 
-func preRun(cmd *cobra.Command, _ []string) {
+func preRun(_ *cobra.Command, _ []string) {
+	// nolint: staticcheck
 	rand.Seed(time.Now().UnixNano())
 }
 
@@ -35,6 +36,7 @@ func run(_ *cobra.Command, _ []string) {
 	lg := logger.NewZap(configs.Logger)
 
 	var waitGroup sync.WaitGroup
+
 	waitGroup.Add(configs.CallCount)
 
 	for index := 0; index < configs.CallCount; index++ {

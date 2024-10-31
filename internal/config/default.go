@@ -9,7 +9,7 @@ import (
 )
 
 // Default return default configuration.
-func Default() Config {
+func Default() Config { // nolint: mnd, gomnd
 	return Config{
 		Logger: &logger.Config{
 			Development: true,
@@ -50,7 +50,7 @@ func Default() Config {
 			Address: "ws://janus-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io",
 			// Address: "ws://localhost:7000",
 		},
-		Ion_sfu: &ion_sfu.Config{
+		IonSfu: &ion_sfu.Config{
 			Address: "ws://ion-sfu-dispatching-testing.apps.private.okd4.teh-1.snappcloud.io/ws",
 			// Address: "ws://localhost:7000/ws",
 		},

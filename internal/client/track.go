@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"strings"
@@ -13,35 +14,37 @@ import (
 	"github.com/pion/webrtc/v3/pkg/media/oggreader"
 )
 
+// nolint: exhaustruct, gochecknoglobals
 var (
 	audioTrackCodecCapability = webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeOpus}
-	audioTrackCodecId         = "audio"
+	audioTrackCodecID         = "audio"
 
 	videoTrackCodecCapability = webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeVP8}
-	videoTrackCodecId         = "video"
+	videoTrackCodecID         = "video"
 )
 
-func (client *Client) ReadTrack(doneChannel chan bool, connectedCtx context.Context) {
+func (client *Client) ReadTrack(doneChannel chan bool, connectedCtx context.Context) { // nolint; revive
 	_, err := os.Stat(client.Config.TrackAddress)
 	if os.IsNotExist(err) {
 		panic("Track Not Exists")
 	}
 
-	var trackCodecCapability webrtc.RTPCodecCapability
-	var trackCodecId string
-
-	mimeType := client.Config.RTPCodec.MimeType
-	isAudioTrack := strings.Split(mimeType, "/")[0] == "audio"
+	var (
+		trackCodecCapability webrtc.RTPCodecCapability
+		trackCodecID         string
+		mimeType             = client.Config.RTPCodec.MimeType
+		isAudioTrack         = strings.Split(mimeType, "/")[0] == "audio"
+	)
 
 	if isAudioTrack {
 		trackCodecCapability = audioTrackCodecCapability
-		trackCodecId = audioTrackCodecId
+		trackCodecID = audioTrackCodecID
 	} else {
 		trackCodecCapability = videoTrackCodecCapability
-		trackCodecId = videoTrackCodecId
+		trackCodecID = videoTrackCodecID
 	}
 
-	track, trackErr := webrtc.NewTrackLocalStaticSample(trackCodecCapability, trackCodecId, "ghodrat")
+	track, trackErr := webrtc.NewTrackLocalStaticSample(trackCodecCapability, trackCodecID, "ghodrat")
 	if trackErr != nil {
 		panic(trackErr)
 	}
@@ -65,6 +68,7 @@ func (client *Client) ReadTrack(doneChannel chan bool, connectedCtx context.Cont
 // like NACK this needs to be called.
 func readRTCP(rtpSender *webrtc.RTPSender) {
 	rtcpBuf := make([]byte, 1500)
+
 	for {
 		if _, _, rtcpErr := rtpSender.Read(rtcpBuf); rtcpErr != nil {
 			return
@@ -74,7 +78,9 @@ func readRTCP(rtpSender *webrtc.RTPSender) {
 
 const oggPageDuration = time.Millisecond * 20
 
-func audioTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalStaticSample, connectedCtx context.Context) {
+func audioTrack(address string, doneChannel chan bool,
+	track *webrtc.TrackLocalStaticSample, connectedCtx context.Context,
+) {
 	// Open a OGG file and start reading using our OGGReader
 	file, oggErr := os.Open(address)
 	if oggErr != nil {
@@ -97,10 +103,12 @@ func audioTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalS
 	// * avoids accumulating skew, just calling time.Sleep didn't compensate for the time spent parsing the data
 	// * works around latency issues with Sleep (see https://github.com/golang/go/issues/44343)
 	ticker := time.NewTicker(oggPageDuration)
+
 	for ; true; <-ticker.C {
 		pageData, pageHeader, oggErr := ogg.ParseNextPage()
-		if oggErr == io.EOF {
+		if errors.Is(oggErr, io.EOF) {
 			doneChannel <- true
+
 			return
 		}
 
@@ -113,6 +121,7 @@ func audioTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalS
 		lastGranule = pageHeader.GranulePosition
 		sampleDuration := time.Duration((sampleCount/48000)*1000) * time.Millisecond
 
+		// nolint: exhaustruct
 		sample := media.Sample{Data: pageData, Duration: sampleDuration}
 		if oggErr = track.WriteSample(sample); oggErr != nil {
 			panic(oggErr)
@@ -120,7 +129,10 @@ func audioTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalS
 	}
 }
 
-func videoTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalStaticSample, connectedCtx context.Context) {
+// nolint: revive
+func videoTrack(address string, doneChannel chan bool,
+	track *webrtc.TrackLocalStaticSample, connectedCtx context.Context,
+) {
 	// Open a IVF file and start reading using our IVFReader
 	file, ivfErr := os.Open(address)
 	if ivfErr != nil {
@@ -141,11 +153,17 @@ func videoTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalS
 	// It is important to use a time.Ticker instead of time.Sleep because
 	// * avoids accumulating skew, just calling time.Sleep didn't compensate for the time spent parsing the data
 	// * works around latency issues with Sleep (see https://github.com/golang/go/issues/44343)
-	ticker := time.NewTicker(time.Millisecond * time.Duration((float32(header.TimebaseNumerator)/float32(header.TimebaseDenominator))*1000))
+	ticker := time.NewTicker(
+		time.Millisecond * time.Duration(
+			(float32(header.TimebaseNumerator)/float32(header.TimebaseDenominator))*1000,
+		),
+	)
+
 	for ; true; <-ticker.C {
 		frame, _, ivfErr := ivf.ParseNextFrame()
-		if ivfErr == io.EOF {
+		if errors.Is(ivfErr, io.EOF) {
 			doneChannel <- true
+
 			return
 		}
 
@@ -153,6 +171,7 @@ func videoTrack(address string, doneChannel chan bool, track *webrtc.TrackLocalS
 			panic(ivfErr)
 		}
 
+		// nolint: exhaustruct
 		sample := media.Sample{Data: frame, Duration: time.Second}
 		if ivfErr = track.WriteSample(sample); ivfErr != nil {
 			panic(ivfErr)

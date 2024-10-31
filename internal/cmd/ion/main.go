@@ -19,19 +19,20 @@ const (
 )
 
 func Command() *cobra.Command {
+	// nolint: exhaustruct
 	cmd := &cobra.Command{Use: use, Short: short, Long: long, Example: example, Run: run}
 
 	return cmd
 }
 
-func run(cmd *cobra.Command, _ []string) {
+func run(_ *cobra.Command, _ []string) {
 	configs := config.New()
 
 	lg := logger.NewZap(configs.Logger)
 
-	//var waitGroup sync.WaitGroup
+	// var waitGroup sync.WaitGroup
 
-	//waitGroup.Add(configs.CallCount)
+	// waitGroup.Add(configs.CallCount)
 
 	engine := ion.NewEngine(nil, lg)
 

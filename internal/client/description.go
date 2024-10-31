@@ -33,6 +33,7 @@ func (client *Client) GetLocalDescription() *webrtc.SessionDescription {
 
 func (client *Client) SetRemoteDescription(sdp webrtc.SessionDescription) {
 	client.Logger.Info("remote description", zap.Any("sdp", sdp))
+
 	if err := client.connection.SetRemoteDescription(sdp); err != nil {
 		client.Logger.Fatal("failed to set remote SDP answer", zap.Error(err))
 	}

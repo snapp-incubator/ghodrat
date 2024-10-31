@@ -19,13 +19,14 @@ const (
 )
 
 func Command() *cobra.Command {
-	// nolint: exhaustivestruct
+	// nolint: exhaustruct
 	cmd := &cobra.Command{Use: use, Short: short, Run: run, PreRun: preRun}
 
 	return cmd
 }
 
-func preRun(cmd *cobra.Command, _ []string) {
+func preRun(_ *cobra.Command, _ []string) {
+	// nolint: staticcheck
 	rand.Seed(time.Now().UnixNano())
 }
 
@@ -35,13 +36,14 @@ func run(_ *cobra.Command, _ []string) {
 	lg := logger.NewZap(configs.Logger)
 
 	var waitGroup sync.WaitGroup
+
 	waitGroup.Add(configs.CallCount)
 
 	for index := 0; index < configs.CallCount; index++ {
 		zap := lg.Named(fmt.Sprintf("goroutine: %d", index+1))
 
-		server := ion_sfu.Ion_sfu{
-			Config: configs.Ion_sfu,
+		server := ion_sfu.IonSfu{
+			Config: configs.IonSfu,
 			Logger: zap,
 			Client: &client.Client{
 				Config: configs.Client,
@@ -49,7 +51,7 @@ func run(_ *cobra.Command, _ []string) {
 			},
 		}
 
-		go func(server ion_sfu.Ion_sfu) {
+		go func(server ion_sfu.IonSfu) {
 			doneChannel := make(chan bool)
 			server.StartCall(doneChannel)
 			<-doneChannel

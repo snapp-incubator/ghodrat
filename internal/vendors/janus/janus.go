@@ -36,6 +36,7 @@ func (j *Janus) initiate() {
 
 func (j *Janus) handle() {
 	handle := j.audioBridgeHandle
+
 	for {
 		msg := <-handle.Events
 		switch msg := msg.(type) {
@@ -55,6 +56,7 @@ func (j *Janus) handle() {
 
 func (j *Janus) call() error {
 	request := map[string]interface{}{"request": "create"}
+
 	create, err := j.audioBridgeHandle.Request(request)
 	if err != nil {
 		return fmt.Errorf("failed to create room: %w", err)
@@ -65,6 +67,7 @@ func (j *Janus) call() error {
 	j.Logger.Info("room created", zap.Float64("room", roomID))
 
 	body := map[string]interface{}{"request": "join", "room": roomID}
+
 	join, err := j.audioBridgeHandle.Message(body, nil)
 	if err != nil {
 		j.Logger.Fatal("failed to join room", zap.Error(err))
@@ -76,8 +79,9 @@ func (j *Janus) call() error {
 	)
 
 	body = map[string]interface{}{"request": "configure"}
-	jsep := map[string]interface{}{"type": "offer",
-		"sdp": j.Client.GetLocalDescription().SDP,
+	jsep := map[string]interface{}{
+		"type": "offer",
+		"sdp":  j.Client.GetLocalDescription().SDP,
 	}
 
 	configure, err := j.audioBridgeHandle.Message(body, jsep)
