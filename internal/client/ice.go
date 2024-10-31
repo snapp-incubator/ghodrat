@@ -22,6 +22,7 @@ func (client *Client) AddIceCandidate(c *webrtc.ICECandidateInit) {
 
 func (client *Client) onICEConnectionStateChange(connectionState webrtc.ICEConnectionState) {
 	client.Logger.Info("connection state has changed", zap.String("state", connectionState.String()))
+
 	if connectionState == webrtc.ICEConnectionStateConnected {
 		client.iceConnectedCtxCancel()
 	}

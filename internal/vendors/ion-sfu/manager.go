@@ -2,23 +2,23 @@ package ion_sfu
 
 import "context"
 
-func (ion_sfu *Ion_sfu) StartCall(doneChannel chan bool) {
+func (ionSfu *IonSfu) StartCall(doneChannel chan bool) {
 	iceConnectedCtx, iceConnectedCtxCancel := context.WithCancel(context.Background())
 
-	ion_sfu.generateSID()
-	ion_sfu.dial()
+	ionSfu.generateSID()
+	ionSfu.dial()
 
-	ion_sfu.Client.CreatePeerConnection(iceConnectedCtxCancel)
+	ionSfu.Client.CreatePeerConnection(iceConnectedCtxCancel)
 
-	go ion_sfu.readMessage()
+	go ionSfu.readMessage()
 
-	ion_sfu.Client.ReadTrack(doneChannel, iceConnectedCtx)
+	ionSfu.Client.ReadTrack(doneChannel, iceConnectedCtx)
 
-	ion_sfu.Client.CreateAndSetOffer()
-	ion_sfu.Client.OnIceCandidate(ion_sfu.onIceCandidate)
-	ion_sfu.offer()
+	ionSfu.Client.CreateAndSetOffer()
+	ionSfu.Client.OnIceCandidate(ionSfu.onIceCandidate)
+	ionSfu.offer()
 }
 
-func (j *Ion_sfu) HangUp() {
-	j.Client.ClosePeerConnection()
+func (ionSfu *IonSfu) HangUp() {
+	ionSfu.Client.ClosePeerConnection()
 }

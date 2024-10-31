@@ -1,0 +1,30 @@
+---
+linters:
+  enable-all: true
+  disable:
+    - depguard
+    - tagliatelle
+    - nolintlint
+    - varnamelen
+    - ireturn
+    - execinquery
+    - gomnd
+    - mnd
+    - exportloopref
+    - copyloopvar
+    - intrange
+    - gosec
+    - gocritic
+    - forcetypeassert
+    - wrapcheck
+    - revive
+    - stylecheck
+linters-settings:
+  cyclop:
+    max-complexity: 15
+    package-average: 0.0
+    skip-tests: true
+  funlen:
+    lines: 85
+    statements: 40
+    ignore-comments: true

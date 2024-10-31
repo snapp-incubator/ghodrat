@@ -10,6 +10,7 @@ import (
 // InitiatePeerConnection returns webrtc-peer-connection with opus media-engine.
 func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelFunc) {
 	client.iceConnectedCtxCancel = iceConnectedCtxCancel
+
 	var err error
 
 	// A MediaEngine defines the codecs supported by a PeerConnection
@@ -36,7 +37,7 @@ func (client *Client) CreatePeerConnection(iceConnectedCtxCancel context.CancelF
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
 
 	// Prepare the configuration
-	// nolint: exhaustivestruct
+	// nolint: exhaustruct
 	config := webrtc.Configuration{
 		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
 		ICEServers: []webrtc.ICEServer{

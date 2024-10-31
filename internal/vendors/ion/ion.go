@@ -29,6 +29,7 @@ type Client struct {
 }
 
 func NewEngine(cfg *Config, logger *zap.Logger) *Engine {
+	// nolint: exhaustruct
 	sdkCfg := sdk.Config{
 		WebRTC: sdk.WebRTCTransportConfig{
 			Configuration: webrtc.Configuration{
@@ -54,6 +55,7 @@ func (e *Engine) NewClient(peerClient *client.Client) (*Client, error) {
 	uuid, err := uuid.NewUUID()
 	if err != nil {
 		e.Logger.Error("failed to generate uuid", zap.Error(err))
+
 		cid = strconv.FormatInt(rand.Int63(), 10)
 	} else {
 		cid = uuid.String()
@@ -65,12 +67,13 @@ func (e *Engine) NewClient(peerClient *client.Client) (*Client, error) {
 	}
 
 	// Change c.OnTrack for custom packet processing,
-	//default approach is described in c.Join()
+	// default approach is described in c.Join()
 
 	c.OnError = func(err error) {
 		e.Logger.Error("ion client error", zap.String("cid", cid), zap.Error(err))
 	}
 
+	// nolint: exhaustruct
 	return &Client{
 		Logger:       e.Logger,
 		serverClient: c,
