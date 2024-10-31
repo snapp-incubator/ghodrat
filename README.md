@@ -2,15 +2,15 @@
 
 > WebRTC media servers stress testing tool
 
-## supported media servers
+## Supported media servers
 
 - ion-sfu
 - janus
 
-## features
+## Features
 
-- audio call
-- video call
+- Audio call
+- Video call
 
 
 ## ION-SFU media-server under load
@@ -29,30 +29,30 @@
 
 - ion-sfu
 
-    ``` zsh
-    # update or create manifests
-    kubectl apply -f ./deployments/k8s/ion-sfu/configmap.yml
-    kubectl apply -f ./deployments/k8s/ion-sfu/job.yml
+``` zsh
+# update or create manifests
+kubectl apply -f ./deployments/k8s/ion-sfu/configmap.yml
+kubectl apply -f ./deployments/k8s/ion-sfu/job.yml
 
-    # delete manifests
-    kubectl delete -f ./deployments/k8s/ion-sfu/configmap.yml
-    kubectl delete -f ./deployments/k8s/ion-sfu/job.yml
-    ```
+# delete manifests
+kubectl delete -f ./deployments/k8s/ion-sfu/configmap.yml
+kubectl delete -f ./deployments/k8s/ion-sfu/job.yml
+```
 
 - janus
 
-    ``` zsh
-    # update or create manifests
-    kubectl apply -f ./deployments/k8s/janus/configmap.yml
-    kubectl apply -f ./deployments/k8s/janus/job.yml
+``` zsh
+# update or create manifests
+kubectl apply -f ./deployments/k8s/janus/configmap.yml
+kubectl apply -f ./deployments/k8s/janus/job.yml
 
-    # delete manifests
-    kubectl delete -f ./deployments/k8s/janus/configmap.yml
-    kubectl delete -f ./deployments/k8s/janus/job.yml
-    ```
+# delete manifests
+kubectl delete -f ./deployments/k8s/janus/configmap.yml
+kubectl delete -f ./deployments/k8s/janus/job.yml
+```
 
+### Troubleshooting image
 
-
-### troubleshooting image
-
-- docker container run --entrypoint /bin/sh -it --rm ghcr.io/snapp-incubator/ghodrat-janus:latest
+```bash
+docker container run --entrypoint /bin/sh -it --rm ghcr.io/snapp-incubator/ghodrat-janus:latest
+```
